@@ -208,7 +208,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
               <button onClick={handleNextMonth} className="p-1 text-gray-500 hover:text-brand-primary hover:bg-gray-50 rounded-md transition-all"><ChevronRight size={18}/></button>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-2">
             <p className="text-gray-500 text-sm">Clasificación de voluntarios por desempeño</p>
             {rankedVolunteers.length > 0 && (
               <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 shadow-sm">
@@ -391,7 +391,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       ) : (
         <>
           {/* Podium for Top 3 */}
-          <div className="flex flex-col sm:flex-row justify-center items-end gap-4 sm:gap-6 mt-12 mb-16 px-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 sm:gap-6 mt-12 mb-16 px-4">
             {/* 2nd Place */}
             {top3[1] && (
               <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
