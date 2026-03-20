@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Volunteer, Shift } from '../types';
-import { Trophy, Medal, Award, RotateCcw, ChevronLeft, ChevronRight, History, User, Calendar as CalendarIcon } from 'lucide-react';
+import { Trophy, Medal, Award, RotateCcw, ChevronLeft, ChevronRight, History, User, Calendar as CalendarIcon, Download } from 'lucide-react';
 import { scheduleService } from '../services/scheduleService';
-import { getMonthName } from '../utils/dates';
+import { getMonthName, getServiceDate } from '../utils/dates';
 import { clsx } from 'clsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface RankingViewProps {
   volunteers: Volunteer[];
@@ -135,6 +137,57 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
   const top3 = rankedVolunteers.slice(0, 3);
   const rest = rankedVolunteers.slice(3);
 
+  const globalAverage = useMemo(() => {
+    if (rankedVolunteers.length === 0) return 0;
+    const totalScore = rankedVolunteers.reduce((sum, v) => sum + v.calculatedStats.total, 0);
+    return Math.round(totalScore / rankedVolunteers.length);
+  }, [rankedVolunteers]);
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    const monthName = getMonthName(selectedMonth, selectedYear);
+    const title = selectedHistoryVolunteerId 
+      ? `Historial de Evaluaciones - ${historyVolunteers.find(v => v.id === selectedHistoryVolunteerId)?.name} - ${monthName}`
+      : `Historial de Evaluaciones - Todos - ${monthName}`;
+
+    doc.setFontSize(16);
+    doc.text(title, 14, 20);
+
+    const tableData = filteredHistoryShifts.map(shift => {
+      const volunteer = volunteers.find(v => v.id === shift.volunteerId);
+      const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
+      const dayNumber = date.getDate();
+      const dateStr = shift.date 
+        ? `${date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} - ${shift.day}` 
+        : `Semana ${shift.week} - ${shift.day} ${dayNumber}`;
+      
+      return [
+        dateStr,
+        volunteer?.name || 'Desconocido',
+        shift.role,
+        shift.scores?.puntualidad || 0,
+        shift.scores?.orden || 0,
+        shift.scores?.responsabilidad || 0,
+        shift.scores?.total || 0,
+        shift.scores?.note || '-'
+      ];
+    });
+
+    autoTable(doc, {
+      startY: 30,
+      head: [['Fecha/Semana', 'Voluntario', 'Rol', 'Puntualidad', 'Orden', 'Resp.', 'Total', 'Notas']],
+      body: tableData,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [79, 70, 229] }, // brand primary color
+    });
+
+    const fileName = selectedHistoryVolunteerId 
+      ? `Evaluaciones_${historyVolunteers.find(v => v.id === selectedHistoryVolunteerId)?.name.replace(/\s+/g, '_')}_${monthName.replace(' ', '_')}.pdf`
+      : `Evaluaciones_Todos_${monthName.replace(' ', '_')}.pdf`;
+
+    doc.save(fileName);
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -146,7 +199,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3 mb-1">
             <h2 className="text-2xl font-bold text-gray-900">Ranking</h2>
             <div className="flex items-center gap-1 bg-white rounded-lg p-1 text-sm font-medium border border-gray-200 shadow-sm">
@@ -155,7 +208,15 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
               <button onClick={handleNextMonth} className="p-1 text-gray-500 hover:text-brand-primary hover:bg-gray-50 rounded-md transition-all"><ChevronRight size={18}/></button>
             </div>
           </div>
-          <p className="text-gray-500 text-sm mt-1">Clasificación de voluntarios por desempeño</p>
+          <div className="flex items-center gap-4">
+            <p className="text-gray-500 text-sm">Clasificación de voluntarios por desempeño</p>
+            {rankedVolunteers.length > 0 && (
+              <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 shadow-sm">
+                <Award size={14} />
+                Promedio Global: {globalAverage} pts
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -207,25 +268,35 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                 <History size={20} className="text-brand-primary" />
                 Historial de Evaluaciones - {getMonthName(selectedMonth, selectedYear)}
               </h3>
-              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
-                <User size={16} className="text-gray-500" />
-                <select
-                  value={selectedHistoryVolunteerId}
-                  onChange={(e) => setSelectedHistoryVolunteerId(e.target.value)}
-                  className="text-sm border-none bg-transparent focus:ring-0 text-gray-700 font-medium cursor-pointer outline-none"
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                  <User size={16} className="text-gray-500" />
+                  <select
+                    value={selectedHistoryVolunteerId}
+                    onChange={(e) => setSelectedHistoryVolunteerId(e.target.value)}
+                    className="text-sm border-none bg-transparent focus:ring-0 text-gray-700 font-medium cursor-pointer outline-none"
+                  >
+                    <option value="">Todos los voluntarios</option>
+                    {historyVolunteers.map(v => (
+                      <option key={v.id} value={v.id}>{v.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="flex items-center gap-2 bg-brand-primary text-white px-3 py-1.5 rounded-lg hover:bg-brand-primary/90 transition-colors font-medium text-sm shadow-sm"
+                  title="Descargar PDF"
                 >
-                  <option value="">Todos los voluntarios</option>
-                  {historyVolunteers.map(v => (
-                    <option key={v.id} value={v.id}>{v.name}</option>
-                  ))}
-                </select>
+                  <Download size={16} />
+                  Descargar PDF
+                </button>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50/50 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-4 border-b border-gray-100">Semana</th>
+                    <th className="px-6 py-4 border-b border-gray-100">Semana / Día</th>
                     <th className="px-6 py-4 border-b border-gray-100">Voluntario</th>
                     <th className="px-6 py-4 border-b border-gray-100">Rol</th>
                     <th className="px-6 py-4 border-b border-gray-100 text-center">Puntualidad</th>
@@ -239,8 +310,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                   {filteredHistoryShifts.map((shift) => {
                     const volunteer = volunteers.find(v => v.id === shift.volunteerId);
                     if (!volunteer || !shift.scores) return null;
-                    const date = shift.date ? new Date(shift.date) : null;
-                    const dateStr = date ? date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : `Semana ${shift.week}`;
+                    const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
+                    const dayNumber = date.getDate();
+                    const dateStr = shift.date 
+                      ? `${date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} - ${shift.day}` 
+                      : `Semana ${shift.week} - ${shift.day} ${dayNumber}`;
                     
                     return (
                       <tr key={shift.id} className="hover:bg-gray-50/50 transition-colors">
