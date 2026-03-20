@@ -100,14 +100,17 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
 
         // Normalize scores relative to max assigned shifts for equity
         // This averages the total score across the maximum possible contribution (max shifts in month)
+        // Then we scale it so the maximum possible base score is 50 points (instead of 15)
         // Extra points are added AFTER normalization as they are "extra" achievements
+        const scaleFactor = 50 / 15;
+        
         return {
           ...v,
           calculatedStats: {
-            puntualidad: Number((currentStats.puntualidad / maxAssignedShifts).toFixed(2)),
-            orden: Number((currentStats.orden / maxAssignedShifts).toFixed(2)),
-            responsabilidad: Number((currentStats.responsabilidad / maxAssignedShifts).toFixed(2)),
-            total: Number(((currentStats.total / maxAssignedShifts) + extraPoints).toFixed(2)),
+            puntualidad: Number(((currentStats.puntualidad / maxAssignedShifts) * scaleFactor).toFixed(2)),
+            orden: Number(((currentStats.orden / maxAssignedShifts) * scaleFactor).toFixed(2)),
+            responsabilidad: Number(((currentStats.responsabilidad / maxAssignedShifts) * scaleFactor).toFixed(2)),
+            total: Math.round(((currentStats.total / maxAssignedShifts) * scaleFactor) + extraPoints),
             shiftCount: currentStats.evaluatedCount,
             assignedCount: assignedCount,
             extraPoints: extraPoints
@@ -302,12 +305,12 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                       <span className="text-xl font-bold text-gray-600">{top3[1].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-gray-300 rounded-full p-1.5 border-2 border-white shadow-sm">
+                  <div className="absolute -bottom-3 -right-3 bg-gray-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
                     <Medal size={20} className="text-gray-600" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-gray-200 to-gray-100 w-full rounded-t-2xl border border-gray-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-32 flex flex-col justify-start">
-                  <p className="font-bold text-gray-800 truncate w-full px-2">{top3[1].name}</p>
+                <div className="bg-gradient-to-t from-gray-200 to-gray-100 w-full rounded-t-2xl border border-gray-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-40 flex flex-col justify-start">
+                  <p className="font-bold text-gray-800 line-clamp-2 leading-tight w-full px-2">{top3[1].name}</p>
                   <p className="text-2xl font-black text-gray-600 mt-1">{top3[1].calculatedStats.total} <span className="text-xs font-normal text-gray-500">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
@@ -334,12 +337,12 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                       <span className="text-2xl font-bold text-yellow-600">{top3[0].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-4 -right-4 bg-yellow-400 rounded-full p-2 border-2 border-white shadow-md">
+                  <div className="absolute -bottom-4 -right-4 bg-yellow-400 rounded-full p-2 border-2 border-white shadow-md z-20">
                     <Trophy size={24} className="text-white" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-yellow-200 to-yellow-100 w-full rounded-t-2xl border border-yellow-300 border-b-0 pt-8 pb-4 px-2 text-center shadow-md h-40 flex flex-col justify-start">
-                  <p className="font-bold text-yellow-900 truncate w-full px-2 text-lg">{top3[0].name}</p>
+                <div className="bg-gradient-to-t from-yellow-200 to-yellow-100 w-full rounded-t-2xl border border-yellow-300 border-b-0 pt-8 pb-4 px-2 text-center shadow-md h-48 flex flex-col justify-start">
+                  <p className="font-bold text-yellow-900 line-clamp-2 leading-tight w-full px-2 text-lg">{top3[0].name}</p>
                   <p className="text-3xl font-black text-yellow-700 mt-1">{top3[0].calculatedStats.total} <span className="text-sm font-normal text-yellow-600">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
                     <p className="text-xs text-yellow-600/70 uppercase font-bold tracking-wider">
@@ -366,12 +369,12 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                       <span className="text-xl font-bold text-orange-700">{top3[2].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-orange-300 rounded-full p-1.5 border-2 border-white shadow-sm">
+                  <div className="absolute -bottom-3 -right-3 bg-orange-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
                     <Award size={20} className="text-orange-800" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-orange-200 to-orange-100 w-full rounded-t-2xl border border-orange-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-24 flex flex-col justify-start">
-                  <p className="font-bold text-orange-900 truncate w-full px-2">{top3[2].name}</p>
+                <div className="bg-gradient-to-t from-orange-200 to-orange-100 w-full rounded-t-2xl border border-orange-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-36 flex flex-col justify-start">
+                  <p className="font-bold text-orange-900 line-clamp-2 leading-tight w-full px-2">{top3[2].name}</p>
                   <p className="text-xl font-black text-orange-800 mt-1">{top3[2].calculatedStats.total} <span className="text-xs font-normal text-orange-700">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
                     <p className="text-[10px] text-orange-700/60 uppercase font-bold tracking-wider">

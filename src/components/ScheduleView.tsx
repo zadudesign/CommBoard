@@ -222,7 +222,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       .sort((a, b) => {
         const dateA = a.date ? new Date(a.date) : getServiceDate(a.week, a.day as any, selectedMonth, selectedYear);
         const dateB = b.date ? new Date(b.date) : getServiceDate(b.week, b.day as any, selectedMonth, selectedYear);
-        return dateA.getTime() - dateB.getTime();
+        const dateDiff = dateA.getTime() - dateB.getTime();
+        if (dateDiff !== 0) return dateDiff;
+        if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
+        if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
+        return 0;
       })
       .map(shift => {
         const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
@@ -307,7 +311,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
         ? new Date(shift.date) 
         : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
       
-      const existingService = services.find(s => s.date.getTime() === date.getTime());
+      const existingService = services.find(s => s.date.getTime() === date.getTime() && s.day === shift.day);
       if (existingService) {
         if (!existingService.shifts.some(s => s.id === shift.id)) {
           existingService.shifts.push(shift);
@@ -322,7 +326,13 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       }
     });
     
-    return services.sort((a, b) => a.date.getTime() - b.date.getTime());
+    return services.sort((a, b) => {
+      const dateDiff = a.date.getTime() - b.date.getTime();
+      if (dateDiff !== 0) return dateDiff;
+      if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
+      if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
+      return 0;
+    });
   }, [filteredSchedule, viewMode, selectedVolunteerId, selectedMonth, selectedYear]);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
@@ -349,6 +359,16 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
         }
       }
     });
+    
+    // Sort shifts inside each day
+    Object.keys(shiftsMap).forEach(day => {
+      shiftsMap[parseInt(day)].sort((a, b) => {
+        if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
+        if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
+        return a.role.localeCompare(b.role);
+      });
+    });
+    
     return shiftsMap;
   }, [filteredSchedule, selectedVolunteerId, selectedMonth, selectedYear]);
 
@@ -652,7 +672,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                     .sort((a, b) => {
                       const dateA = a.date ? new Date(a.date) : getServiceDate(a.week, a.day as any, selectedMonth, selectedYear);
                       const dateB = b.date ? new Date(b.date) : getServiceDate(b.week, b.day as any, selectedMonth, selectedYear);
-                      return dateA.getTime() - dateB.getTime();
+                      const dateDiff = dateA.getTime() - dateB.getTime();
+                      if (dateDiff !== 0) return dateDiff;
+                      if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
+                      if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
+                      return 0;
                     })
                     .map(shift => {
                       const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
@@ -787,7 +811,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                           : (service.day as string).includes('Mañana') ? 'Mañana' : (service.day as string).includes('Tarde') ? 'Tarde' : '';
 
                         return (
-                          <div key={service.date.getTime()} className={clsx("p-5 transition-colors hover:bg-gray-50", isServiceToday && "bg-brand-primary/5")}>
+                          <div key={`${service.date.getTime()}-${service.day}`} className={clsx("p-5 transition-colors hover:bg-gray-50", isServiceToday && "bg-brand-primary/5")}>
                             <div className={clsx(
                               "flex items-center justify-between mb-4 p-3 rounded-xl border",
                               isServiceToday 
@@ -949,7 +973,13 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                           shifts,
                           isEvent: !!firstShift.eventName 
                         };
-                      }).sort((a, b) => a.date.getTime() - b.date.getTime());
+                      }).sort((a, b) => {
+                        const dateDiff = a.date.getTime() - b.date.getTime();
+                        if (dateDiff !== 0) return dateDiff;
+                        if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
+                        if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
+                        return 0;
+                      });
 
                         return weekServices.map(service => {
                           const isServiceToday = isToday(service.date);
