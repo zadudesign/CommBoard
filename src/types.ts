@@ -52,3 +52,8 @@ export interface ScheduleConfig {
   maxPerMonth: number;
   maxPerWeek: number;
 }
+
+export interface RoleTasks {
+  role: Role;
+  tasks: string[];
+}

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Volunteer, Shift, ScheduleConfig } from '../types';
 import { generateSchedule, SERVICES } from '../utils/scheduler';
 import { scheduleService } from '../services/scheduleService';
-import { CalendarDays, AlertCircle, RefreshCw, Settings2, UserCircle2, Calendar as CalendarIcon, CalendarRange, Star, CheckCircle2, ChevronLeft, ChevronRight, List, Grid, Download, PlusCircle, X, Trash2 } from 'lucide-react';
+import { CalendarDays, AlertCircle, RefreshCw, Settings2, UserCircle2, Calendar as CalendarIcon, CalendarRange, Star, CheckCircle2, ChevronLeft, ChevronRight, List, Grid, Download, PlusCircle, X, Trash2, Info } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,7 +10,8 @@ import { ROLE_CONFIG } from '../utils/roleConfig';
 import { getServiceDate, isToday, formatDate, getCurrentWeekNumber, getMonthName } from '../utils/dates';
 import { EvaluationModal } from './EvaluationModal';
 import { SpecialEventForm } from './SpecialEventForm';
-import { SpecialEvent } from '../types';
+import { SpecialEvent, RoleTasks } from '../types';
+import { roleTaskService } from '../services/roleTaskService';
 
 interface ScheduleViewProps {
   volunteers: Volunteer[];
@@ -31,6 +32,8 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [isManageEventsOpen, setIsManageEventsOpen] = useState(false);
   const [specialEvents, setSpecialEvents] = useState<SpecialEvent[]>([]);
+  const [roleTasks, setRoleTasks] = useState<RoleTasks[]>([]);
+  const [viewingTasksRole, setViewingTasksRole] = useState<string | null>(null);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const selectedMonth = currentDate.getMonth();
@@ -38,7 +41,17 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
 
   useEffect(() => {
     loadSchedule();
+    loadRoleTasks();
   }, []);
+
+  const loadRoleTasks = async () => {
+    try {
+      const data = await roleTaskService.getRoleTasks();
+      setRoleTasks(data);
+    } catch (error) {
+      console.error('Error loading role tasks:', error);
+    }
+  };
 
   // Auto-switch to list view when a volunteer is selected
   useEffect(() => {
@@ -724,6 +737,16 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 <span className={clsx("text-xs font-medium flex items-center gap-1 px-2 py-0.5 rounded-md border", roleConfig.color, "bg-white")}>
                                   <RoleIcon size={12} />
                                   {shift.role}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setViewingTasksRole(shift.role);
+                                    }}
+                                    className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                    title="Ver tareas"
+                                  >
+                                    <Info size={12} />
+                                  </button>
                                 </span>
                               </div>
                             </div>
@@ -886,6 +909,16 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     )}>
                                       <RoleIcon size={12} />
                                       {shift.role}
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setViewingTasksRole(shift.role);
+                                        }}
+                                        className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                        title="Ver tareas"
+                                      >
+                                        <Info size={12} />
+                                      </button>
                                     </span>
                                     <span className={twMerge(
                                       clsx(
@@ -1064,6 +1097,16 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                   )}>
                                     <RoleIcon size={12} />
                                     {shift.role}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setViewingTasksRole(shift.role);
+                                      }}
+                                      className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                      title="Ver tareas"
+                                    >
+                                      <Info size={12} />
+                                    </button>
                                   </span>
                                   <span className={twMerge(
                                     clsx(
@@ -1202,6 +1245,74 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                 className="px-6 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
               >
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Role Tasks Modal */}
+      {viewingTasksRole && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70] animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl flex flex-col scale-in">
+            <div className={clsx(
+              "p-6 border-b border-gray-100 flex items-center justify-between text-white",
+              ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary'
+            )}>
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 p-2 rounded-xl">
+                  {(() => {
+                    const RoleIcon = ROLE_CONFIG[viewingTasksRole]?.icon || Info;
+                    return <RoleIcon size={24} />;
+                  })()}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Tareas de {viewingTasksRole}</h2>
+                  <p className="text-white/70 text-sm">Funciones específicas del rol</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setViewingTasksRole(null)}
+                className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+              <div className="space-y-3">
+                {(() => {
+                  const tasks = roleTasks.find(rt => rt.role === viewingTasksRole)?.tasks || [];
+                  if (tasks.length === 0) {
+                    return (
+                      <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
+                        <Info className="mx-auto text-gray-300 mb-3" size={48} />
+                        <p className="text-gray-500">No hay tareas asignadas para este rol</p>
+                      </div>
+                    );
+                  }
+                  return tasks.map((task, index) => (
+                    <div key={index} className="bg-white p-4 rounded-2xl border border-gray-200 flex items-start gap-3 shadow-sm">
+                      <div className={clsx(
+                        "mt-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
+                        ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary',
+                        "text-white"
+                      )}>
+                        {index + 1}
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">{task}</p>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-100 bg-white">
+              <button
+                onClick={() => setViewingTasksRole(null)}
+                className="w-full py-3.5 px-6 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-2xl transition-all shadow-md active:scale-95"
+              >
+                Entendido
               </button>
             </div>
           </div>
