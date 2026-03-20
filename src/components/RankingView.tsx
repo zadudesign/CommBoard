@@ -17,6 +17,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showHistory, setShowHistory] = useState(false);
+  const [selectedHistoryVolunteerId, setSelectedHistoryVolunteerId] = useState<string>('');
   const selectedMonth = currentDate.getMonth();
   const selectedYear = currentDate.getFullYear();
 
@@ -54,6 +55,16 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       return dateA.getTime() - dateB.getTime();
     });
   }, [schedule, selectedMonth, selectedYear]);
+
+  const historyVolunteers = useMemo(() => {
+    const ids = new Set(currentMonthEvaluatedShifts.map(s => s.volunteerId));
+    return volunteers.filter(v => ids.has(v.id)).sort((a, b) => a.name.localeCompare(b.name));
+  }, [currentMonthEvaluatedShifts, volunteers]);
+
+  const filteredHistoryShifts = useMemo(() => {
+    if (!selectedHistoryVolunteerId) return currentMonthEvaluatedShifts;
+    return currentMonthEvaluatedShifts.filter(s => s.volunteerId === selectedHistoryVolunteerId);
+  }, [currentMonthEvaluatedShifts, selectedHistoryVolunteerId]);
 
   const rankedVolunteers = useMemo(() => {
     // 1. Calculate assigned shifts count for ALL volunteers in the month
@@ -98,19 +109,19 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
         
         const currentStats = stats || { puntualidad: 0, orden: 0, responsabilidad: 0, total: 0, evaluatedCount: 0 };
 
-        // Normalize scores relative to max assigned shifts for equity
-        // This averages the total score across the maximum possible contribution (max shifts in month)
-        // Then we scale it so the maximum possible base score is 50 points (instead of 15)
-        // Extra points are added AFTER normalization as they are "extra" achievements
+        // Promediamos los puntajes dividiendo por la cantidad de turnos evaluados del propio voluntario.
+        // Esto garantiza que tanto el que tuvo 2 turnos como el que tuvo 10 puedan alcanzar el máximo de 50 puntos.
+        // Luego escalamos el promedio (que tiene un máximo de 15) para que el máximo sea 50.
+        const divisor = Math.max(currentStats.evaluatedCount, 1);
         const scaleFactor = 50 / 15;
         
         return {
           ...v,
           calculatedStats: {
-            puntualidad: Number(((currentStats.puntualidad / maxAssignedShifts) * scaleFactor).toFixed(2)),
-            orden: Number(((currentStats.orden / maxAssignedShifts) * scaleFactor).toFixed(2)),
-            responsabilidad: Number(((currentStats.responsabilidad / maxAssignedShifts) * scaleFactor).toFixed(2)),
-            total: Math.round(((currentStats.total / maxAssignedShifts) * scaleFactor) + extraPoints),
+            puntualidad: Number(((currentStats.puntualidad / divisor) * scaleFactor).toFixed(2)),
+            orden: Number(((currentStats.orden / divisor) * scaleFactor).toFixed(2)),
+            responsabilidad: Number(((currentStats.responsabilidad / divisor) * scaleFactor).toFixed(2)),
+            total: Math.round(((currentStats.total / divisor) * scaleFactor) + extraPoints),
             shiftCount: currentStats.evaluatedCount,
             assignedCount: assignedCount,
             extraPoints: extraPoints
@@ -191,11 +202,24 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       ) : showHistory && isAdmin ? (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <h3 className="font-bold text-gray-900 flex items-center gap-2">
                 <History size={20} className="text-brand-primary" />
                 Historial de Evaluaciones - {getMonthName(selectedMonth, selectedYear)}
               </h3>
+              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                <User size={16} className="text-gray-500" />
+                <select
+                  value={selectedHistoryVolunteerId}
+                  onChange={(e) => setSelectedHistoryVolunteerId(e.target.value)}
+                  className="text-sm border-none bg-transparent focus:ring-0 text-gray-700 font-medium cursor-pointer outline-none"
+                >
+                  <option value="">Todos los voluntarios</option>
+                  {historyVolunteers.map(v => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -212,7 +236,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {currentMonthEvaluatedShifts.map((shift) => {
+                  {filteredHistoryShifts.map((shift) => {
                     const volunteer = volunteers.find(v => v.id === shift.volunteerId);
                     if (!volunteer || !shift.scores) return null;
                     const date = shift.date ? new Date(shift.date) : null;
