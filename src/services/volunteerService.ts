@@ -23,7 +23,8 @@ class SupabaseVolunteerService implements IVolunteerService {
       ...v,
       photoUrl: v.photo_url,
       createdAt: v.created_at ? new Date(v.created_at).getTime() : undefined,
-      restrictedDates: v.restricted_dates
+      restrictedDates: v.restricted_dates,
+      active: v.active ?? true
     } as Volunteer));
   }
 
@@ -36,7 +37,8 @@ class SupabaseVolunteerService implements IVolunteerService {
         roles: volunteer.roles,
         days: volunteer.days,
         stats: volunteer.stats,
-        restricted_dates: volunteer.restrictedDates
+        restricted_dates: volunteer.restrictedDates,
+        active: volunteer.active ?? true
       }])
       .select()
       .single();
@@ -59,6 +61,7 @@ class SupabaseVolunteerService implements IVolunteerService {
     if (volunteer.days !== undefined) updateData.days = volunteer.days;
     if (volunteer.stats !== undefined) updateData.stats = volunteer.stats;
     if (volunteer.restrictedDates !== undefined) updateData.restricted_dates = volunteer.restrictedDates;
+    if (volunteer.active !== undefined) updateData.active = volunteer.active;
 
     const { error } = await supabase
       .from(this.tableName)
@@ -94,7 +97,7 @@ class LocalVolunteerService implements IVolunteerService {
 
   async addVolunteer(volunteer: Omit<Volunteer, 'id'>): Promise<Volunteer> {
     const volunteers = this.getLocal();
-    const newVolunteer = { ...volunteer, id: uuidv4() };
+    const newVolunteer = { ...volunteer, id: uuidv4(), active: volunteer.active ?? true };
     volunteers.push(newVolunteer);
     this.setLocal(volunteers);
     return newVolunteer;

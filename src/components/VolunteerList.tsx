@@ -62,6 +62,16 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
     }
   };
 
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    try {
+      await volunteerService.updateVolunteer(id, { active: !currentStatus });
+      onUpdateVolunteers();
+    } catch (error) {
+      console.error('Error toggling active status:', error);
+      alert('Error al actualizar el estado del voluntario.');
+    }
+  };
+
   const currentMonthShifts = useMemo(() => {
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -88,6 +98,10 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
   const ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
   const DAYS: Day[] = ['Miércoles', 'Sábado Mañana', 'Sábado Tarde'];
 
+  const activeCount = useMemo(() => {
+    return volunteers.filter(v => v.active !== false).length;
+  }, [volunteers]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -96,7 +110,7 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
             <h2 className="text-2xl font-black text-brand-primary tracking-tight">Voluntarios</h2>
             {isAdmin && (
               <span className="bg-brand-accent text-white text-xs font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
-                {filteredVolunteers.length} {filteredVolunteers.length === 1 ? 'activo' : 'activos'}
+                {activeCount} {activeCount === 1 ? 'habilitado' : 'habilitados'}
               </span>
             )}
           </div>
@@ -175,15 +189,23 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredVolunteers.map(v => (
-            <div key={v.id} className="bg-white p-6 rounded-3xl border border-brand-light/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col justify-between">
+            <div key={v.id} className={clsx(
+              "bg-white p-6 rounded-3xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col justify-between",
+              v.active === false ? "opacity-60 border-gray-200 grayscale-[0.5]" : "border-brand-light/40"
+            )}>
               <div>
                 <div className="flex justify-between items-start mb-5">
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-brand-light/20 border-2 border-brand-light/50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                    <div className="w-20 h-20 rounded-full bg-brand-light/20 border-2 border-brand-light/50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
                       {v.photoUrl ? (
                         <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-3xl font-black text-brand-primary">{v.name.charAt(0)}</span>
+                      )}
+                      {v.active === false && (
+                        <div className="absolute inset-0 bg-gray-900/40 flex items-center justify-center">
+                          <span className="text-[8px] font-black text-white uppercase tracking-tighter bg-red-600 px-1.5 py-0.5 rounded">Inactivo</span>
+                        </div>
                       )}
                     </div>
                     <div>
@@ -207,6 +229,16 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                   </div>
                   {isAdmin && (
                     <div className="flex gap-1.5">
+                      <button 
+                        onClick={() => handleToggleActive(v.id, v.active ?? true)}
+                        className={clsx(
+                          "p-2 rounded-xl transition-all",
+                          v.active === false ? "text-gray-400 hover:text-emerald-600 hover:bg-emerald-50" : "text-emerald-600 hover:bg-emerald-50"
+                        )}
+                        title={v.active === false ? "Habilitar Voluntario" : "Inhabilitar Voluntario"}
+                      >
+                        {v.active === false ? <CalendarCheck2 size={18} /> : <CalendarOff size={18} />}
+                      </button>
                       <button 
                         onClick={() => handleAddExtraPoints(v.id, v.stats?.extraPoints || 0)} 
                         disabled={isUpdatingExtra === v.id}

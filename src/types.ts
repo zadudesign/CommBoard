@@ -18,6 +18,7 @@ export interface Volunteer {
   createdAt?: number;
   stats?: VolunteerStats;
   restrictedDates?: string[];
+  active?: boolean;
 }
 
 export interface Shift {

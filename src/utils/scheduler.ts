@@ -12,6 +12,9 @@ export const SERVICES: { day: Day; roles: Role[] }[] = [
 ];
 
 export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig, month: number, year: number): Shift[] {
+  // Filter active volunteers
+  const activeVolunteers = volunteers.filter(v => v.active !== false);
+  
   const schedule: Shift[] = [];
   const assignmentsCount: Record<string, number> = {}; // volunteerId -> total shifts in month
   const weeklyAssignments: Record<number, Record<string, { day: Day, role: Role }[]>> = {}; // week -> volunteerId -> assignments
@@ -19,7 +22,7 @@ export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig
   const dayAssignmentsCount: Record<string, Record<string, number>> = {}; // volunteerId -> day -> count
 
   // Initialize tracking
-  volunteers.forEach(v => {
+  activeVolunteers.forEach(v => {
     assignmentsCount[v.id] = 0;
     roleAssignmentsCount[v.id] = {};
     dayAssignmentsCount[v.id] = {};
@@ -38,7 +41,7 @@ export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig
 
       for (const role of service.roles) {
         // Find eligible volunteers
-        const eligible = volunteers.filter(v => {
+        const eligible = activeVolunteers.filter(v => {
           // Check restricted dates
           if (v.restrictedDates && v.restrictedDates.includes(dateStr)) return false;
           // Has the required role

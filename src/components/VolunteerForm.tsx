@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Volunteer, Role, Day } from '../types';
 import { X, CalendarOff, Camera } from 'lucide-react';
+import { clsx } from 'clsx';
 import { ROLE_CONFIG } from '../utils/roleConfig';
 import { DatePicker } from './DatePicker';
 
@@ -20,6 +21,7 @@ export function VolunteerForm({ volunteer, onSubmit, onCancel }: VolunteerFormPr
   const [restrictedDates, setRestrictedDates] = useState<string[]>(volunteer?.restrictedDates || []);
   const [newRestrictedDate, setNewRestrictedDate] = useState('');
   const [photoUrl, setPhotoUrl] = useState<string | undefined>(volunteer?.photoUrl);
+  const [active, setActive] = useState(volunteer?.active ?? true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,7 +30,7 @@ export function VolunteerForm({ volunteer, onSubmit, onCancel }: VolunteerFormPr
       alert('Por favor completa todos los campos (nombre, al menos un rol y un día).');
       return;
     }
-    onSubmit({ name, roles, days, restrictedDates, photoUrl, createdAt: volunteer?.createdAt || Date.now() });
+    onSubmit({ name, roles, days, restrictedDates, photoUrl, active, createdAt: volunteer?.createdAt || Date.now() });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +140,30 @@ export function VolunteerForm({ volunteer, onSubmit, onCancel }: VolunteerFormPr
               className="w-full px-4 py-3 border border-brand-light/50 rounded-2xl focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary outline-none transition-all font-bold text-brand-primary placeholder:text-gray-300 shadow-sm"
               placeholder="Ej. Juan Pérez"
             />
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-brand-light/5 rounded-2xl border border-brand-light/20">
+            <div>
+              <p className="text-sm font-black text-brand-primary uppercase tracking-tight">Estado del Voluntario</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                {active ? 'Habilitado para turnos' : 'Inhabilitado para turnos'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActive(!active)}
+              className={clsx(
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ring-2 ring-offset-2",
+                active ? "bg-emerald-500 ring-emerald-500/20" : "bg-gray-300 ring-gray-300/20"
+              )}
+            >
+              <span
+                className={clsx(
+                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                  active ? "translate-x-6" : "translate-x-1"
+                )}
+              />
+            </button>
           </div>
 
           <div>
