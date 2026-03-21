@@ -742,10 +742,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                       e.stopPropagation();
                                       setViewingTasksRole(shift.role);
                                     }}
-                                    className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                    className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
                                     title="Ver tareas"
                                   >
-                                    <Info size={12} />
+                                    <Info size={14} />
                                   </button>
                                 </span>
                               </div>
@@ -914,10 +914,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                           e.stopPropagation();
                                           setViewingTasksRole(shift.role);
                                         }}
-                                        className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                        className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
                                         title="Ver tareas"
                                       >
-                                        <Info size={12} />
+                                        <Info size={14} />
                                       </button>
                                     </span>
                                     <span className={twMerge(
@@ -1102,10 +1102,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                         e.stopPropagation();
                                         setViewingTasksRole(shift.role);
                                       }}
-                                      className="ml-1 text-gray-400 hover:text-brand-primary transition-colors"
+                                      className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
                                       title="Ver tareas"
                                     >
-                                      <Info size={12} />
+                                      <Info size={14} />
                                     </button>
                                   </span>
                                   <span className={twMerge(
@@ -1254,53 +1254,88 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       {/* Role Tasks Modal */}
       {viewingTasksRole && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70] animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl flex flex-col scale-in">
-            <div className={clsx(
-              "p-6 border-b border-gray-100 flex items-center justify-between text-white",
-              ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary'
-            )}>
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-xl">
+          <div className={clsx(
+            "bg-white rounded-3xl w-full max-w-md max-h-[80vh] overflow-hidden shadow-2xl flex flex-col scale-in border-4",
+            ROLE_CONFIG[viewingTasksRole]?.border || 'border-brand-primary'
+          )}>
+            <div className="p-6 flex items-center justify-between bg-white relative overflow-hidden border-b border-gray-100">
+              {/* Decorative background icon */}
+              <div className={clsx(
+                "absolute -right-6 -bottom-6 opacity-5 rotate-12",
+                ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'
+              )}>
+                {(() => {
+                  const RoleIcon = ROLE_CONFIG[viewingTasksRole]?.icon || Info;
+                  return <RoleIcon size={120} />;
+                })()}
+              </div>
+
+              <div className="flex items-center gap-4 relative z-10">
+                <div className={clsx(
+                  "p-3 rounded-2xl shadow-inner",
+                  ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-brand-primary/10'
+                )}>
                   {(() => {
                     const RoleIcon = ROLE_CONFIG[viewingTasksRole]?.icon || Info;
-                    return <RoleIcon size={24} />;
+                    return <RoleIcon size={28} className={ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'} />;
                   })()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">Tareas de {viewingTasksRole}</h2>
-                  <p className="text-white/70 text-sm">Funciones específicas del rol</p>
+                  <h2 className={clsx(
+                    "text-2xl font-black tracking-tight",
+                    ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'
+                  )}>
+                    {viewingTasksRole}
+                  </h2>
+                  <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Tareas Específicas</p>
                 </div>
               </div>
               <button 
                 onClick={() => setViewingTasksRole(null)}
-                className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-xl transition-all relative z-10 active:scale-90 text-gray-400"
               >
                 <X size={24} />
               </button>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
-              <div className="space-y-3">
+            <div className={clsx(
+              "p-6 overflow-y-auto flex-1",
+              ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-gray-50'
+            )}>
+              <div className="space-y-4">
                 {(() => {
                   const tasks = roleTasks.find(rt => rt.role === viewingTasksRole)?.tasks || [];
                   if (tasks.length === 0) {
                     return (
-                      <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
-                        <Info className="mx-auto text-gray-300 mb-3" size={48} />
-                        <p className="text-gray-500">No hay tareas asignadas para este rol</p>
+                      <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-gray-200">
+                        <div className={clsx(
+                          "mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4",
+                          ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-gray-100'
+                        )}>
+                          <Info className={ROLE_CONFIG[viewingTasksRole]?.color} size={32} />
+                        </div>
+                        <p className="text-gray-500 font-medium">No hay tareas asignadas aún</p>
+                        <p className="text-gray-400 text-xs mt-1">Contacta al administrador para definirlas</p>
                       </div>
                     );
                   }
                   return tasks.map((task, index) => (
-                    <div key={index} className="bg-white p-4 rounded-2xl border border-gray-200 flex items-start gap-3 shadow-sm">
+                    <div 
+                      key={index} 
+                      className={clsx(
+                        "bg-white p-5 rounded-2xl border flex items-start gap-4 shadow-sm hover:shadow-md transition-all animate-in slide-in-from-bottom-2 duration-300",
+                        ROLE_CONFIG[viewingTasksRole]?.border || 'border-gray-100'
+                      )}
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
                       <div className={clsx(
-                        "mt-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
+                        "mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0 shadow-sm",
                         ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary',
                         "text-white"
                       )}>
                         {index + 1}
                       </div>
-                      <p className="text-gray-700 leading-relaxed">{task}</p>
+                      <p className="text-gray-700 font-medium leading-relaxed">{task}</p>
                     </div>
                   ));
                 })()}
@@ -1310,7 +1345,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
             <div className="p-6 border-t border-gray-100 bg-white">
               <button
                 onClick={() => setViewingTasksRole(null)}
-                className="w-full py-3.5 px-6 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-2xl transition-all shadow-md active:scale-95"
+                className={clsx(
+                  "w-full py-4 px-6 text-white font-black rounded-2xl transition-all shadow-lg active:scale-95 uppercase tracking-wider text-sm",
+                  ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary',
+                  "hover:brightness-110 shadow-xl"
+                )}
               >
                 Entendido
               </button>
