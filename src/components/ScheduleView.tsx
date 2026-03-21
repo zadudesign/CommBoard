@@ -184,6 +184,28 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     }
   };
 
+  const handleDeleteMonthSchedule = async () => {
+    if (!window.confirm(`¿Estás seguro de que deseas borrar TODOS los turnos de ${getMonthName(selectedMonth, selectedYear)}? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await scheduleService.deleteScheduleByMonth(selectedMonth, selectedYear);
+      const updatedSchedule = schedule.filter(s => {
+        const shiftMonth = s.month ?? new Date().getMonth();
+        const shiftYear = s.year ?? new Date().getFullYear();
+        return !(shiftMonth === selectedMonth && shiftYear === selectedYear);
+      });
+      setSchedule(updatedSchedule);
+    } catch (error) {
+      console.error("Error deleting month schedule:", error);
+      alert("Error al borrar el calendario");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleEvaluateSubmit = async (scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string }) => {
     if (!evaluatingShift) return;
     try {
@@ -493,6 +515,15 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               >
                 <RefreshCw size={16} className={isGenerating ? 'animate-spin' : ''} />
                 <span className="hidden sm:inline">Generar</span>
+              </button>
+              <button
+                onClick={handleDeleteMonthSchedule}
+                disabled={currentMonthSchedule.length === 0 || isGenerating}
+                className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm border border-red-200"
+                title="Borrar turnos del mes"
+              >
+                <Trash2 size={16} />
+                <span className="hidden sm:inline">Borrar</span>
               </button>
               <button
                 onClick={handleDownloadCSV}

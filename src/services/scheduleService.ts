@@ -140,5 +140,28 @@ export const scheduleService = {
       const events = await this.getSpecialEvents();
       localStorage.setItem('specialEvents', JSON.stringify(events.filter(e => e.id !== id)));
     }
+  },
+
+  async deleteScheduleByMonth(month: number, year: number): Promise<void> {
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase
+          .from('schedule')
+          .delete()
+          .eq('month', month)
+          .eq('year', year);
+        
+        if (error) throw error;
+      } catch (e) {
+        console.error("Error deleting month schedule from Supabase, falling back to local", e);
+        const schedule = await this.getSchedule();
+        const filtered = schedule.filter(s => s.month !== month || s.year !== year);
+        localStorage.setItem('schedule', JSON.stringify(filtered));
+      }
+    } else {
+      const schedule = await this.getSchedule();
+      const filtered = schedule.filter(s => s.month !== month || s.year !== year);
+      localStorage.setItem('schedule', JSON.stringify(filtered));
+    }
   }
 };
