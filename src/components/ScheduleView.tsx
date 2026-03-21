@@ -1292,7 +1292,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               </div>
               <button 
                 onClick={() => setViewingTasksRole(null)}
-                className="p-2 hover:bg-gray-100 rounded-xl transition-all relative z-10 active:scale-90 text-gray-400"
+                className={clsx(
+                  "p-2 hover:bg-gray-100 rounded-xl transition-all relative z-10 active:scale-90",
+                  ROLE_CONFIG[viewingTasksRole]?.color || "text-gray-400"
+                )}
               >
                 <X size={24} />
               </button>
@@ -1329,9 +1332,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
                       <div className={clsx(
-                        "mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black shrink-0 shadow-sm",
-                        ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary',
-                        "text-white"
+                        "mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-sm border-2 bg-white",
+                        ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary',
+                        ROLE_CONFIG[viewingTasksRole]?.border || 'border-brand-primary'
                       )}>
                         {index + 1}
                       </div>
@@ -1346,9 +1349,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               <button
                 onClick={() => setViewingTasksRole(null)}
                 className={clsx(
-                  "w-full py-4 px-6 text-white font-black rounded-2xl transition-all shadow-lg active:scale-95 uppercase tracking-wider text-sm",
-                  ROLE_CONFIG[viewingTasksRole]?.color.replace('text-', 'bg-').split(' ')[0] || 'bg-brand-primary',
-                  "hover:brightness-110 shadow-xl"
+                  "w-full py-4 px-6 text-white font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-wider text-sm",
+                  ROLE_CONFIG[viewingTasksRole]?.darkBg || 'bg-brand-primary',
+                  "hover:brightness-110 ring-4 ring-offset-2",
+                  ROLE_CONFIG[viewingTasksRole]?.bg?.replace('bg-', 'ring-') || 'ring-brand-primary/20'
                 )}
               >
                 Entendido

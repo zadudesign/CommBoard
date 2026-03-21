@@ -179,11 +179,11 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center overflow-hidden shrink-0">
                       {v.photoUrl ? (
                         <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-lg font-bold text-brand-primary">{v.name.charAt(0)}</span>
+                        <span className="text-2xl font-bold text-brand-primary">{v.name.charAt(0)}</span>
                       )}
                     </div>
                     <div>

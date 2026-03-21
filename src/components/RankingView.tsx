@@ -330,11 +330,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center overflow-hidden">
+                            <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center overflow-hidden">
                               {volunteer.photoUrl ? (
                                 <img src={volunteer.photoUrl} alt={volunteer.name} className="w-full h-full object-cover" />
                               ) : (
-                                <User size={14} className="text-brand-primary" />
+                                <User size={18} className="text-brand-primary" />
                               )}
                             </div>
                             <span className="text-sm font-bold text-gray-900">{volunteer.name}</span>
@@ -396,11 +396,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
             {top3[1] && (
               <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
                 <div className="relative mb-4">
-                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
+                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
                     {top3[1].photoUrl ? (
                       <img src={top3[1].photoUrl} alt={top3[1].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xl font-bold text-gray-600">{top3[1].name.charAt(0)}</span>
+                      <span className="text-2xl font-bold text-gray-600">{top3[1].name.charAt(0)}</span>
                     )}
                   </div>
                   <div className="absolute -bottom-3 -right-3 bg-gray-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
@@ -428,11 +428,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
             {top3[0] && (
               <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[220px] z-10">
                 <div className="relative mb-4">
-                  <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-10 relative overflow-hidden">
+                  <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-10 relative overflow-hidden">
                     {top3[0].photoUrl ? (
                       <img src={top3[0].photoUrl} alt={top3[0].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl font-bold text-yellow-600">{top3[0].name.charAt(0)}</span>
+                      <span className="text-3xl font-bold text-yellow-600">{top3[0].name.charAt(0)}</span>
                     )}
                   </div>
                   <div className="absolute -bottom-4 -right-4 bg-yellow-400 rounded-full p-2 border-2 border-white shadow-md z-20">
@@ -460,11 +460,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
             {top3[2] && (
               <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[200px]">
                 <div className="relative mb-4">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
+                  <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
                     {top3[2].photoUrl ? (
                       <img src={top3[2].photoUrl} alt={top3[2].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xl font-bold text-orange-700">{top3[2].name.charAt(0)}</span>
+                      <span className="text-2xl font-bold text-orange-700">{top3[2].name.charAt(0)}</span>
                     )}
                   </div>
                   <div className="absolute -bottom-3 -right-3 bg-orange-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
@@ -499,11 +499,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                       <div className="w-8 text-center font-bold text-gray-400">
                         #{index + 4}
                       </div>
-                      <div className="w-10 h-10 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary font-bold overflow-hidden">
+                      <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary font-bold overflow-hidden">
                         {volunteer.photoUrl ? (
                           <img src={volunteer.photoUrl} alt={volunteer.name} className="w-full h-full object-cover" />
                         ) : (
-                          volunteer.name.charAt(0)
+                          <span className="text-lg">{volunteer.name.charAt(0)}</span>
                         )}
                       </div>
                       <p className="font-semibold text-gray-900">{volunteer.name}</p>
