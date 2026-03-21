@@ -26,7 +26,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const [schedule, setSchedule] = useState<Shift[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'monthly' | 'weekly' | 'list' | 'calendar'>('monthly');
+  const [viewMode, setViewMode] = useState<'monthly' | 'weekly' | 'list' | 'calendar'>('weekly');
   const [evaluatingShift, setEvaluatingShift] = useState<{ shiftId: string, volunteerId: string, volunteerName: string } | null>(null);
   const [editingShiftId, setEditingShiftId] = useState<string | null>(null);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
@@ -63,7 +63,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   // Reset view mode if admin logs out while in calendar view
   useEffect(() => {
     if (!isAdmin && viewMode === 'calendar') {
-      setViewMode('monthly');
+      setViewMode('weekly');
     }
   }, [isAdmin, viewMode]);
 
