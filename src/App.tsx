@@ -65,7 +65,7 @@ export default function App() {
     if (!editingVolunteer) return;
     try {
       await volunteerService.updateVolunteer(editingVolunteer.id, volunteerData);
-      setVolunteers(prev => prev.map(v => v.id === editingVolunteer.id ? { ...volunteerData, id: v.id } : v));
+      setVolunteers(prev => prev.map(v => v.id === editingVolunteer.id ? { ...v, ...volunteerData, id: v.id } : v));
       setIsFormOpen(false);
       setEditingVolunteer(undefined);
     } catch (error) {
@@ -106,6 +106,7 @@ export default function App() {
     if (volunteer) {
       const currentStats = volunteer.stats || { puntualidad: 0, orden: 0, responsabilidad: 0, extraPoints: 0, total: 0 };
       const newStats = {
+        ...currentStats,
         puntualidad: currentStats.puntualidad + scores.puntualidad,
         orden: currentStats.orden + scores.orden,
         responsabilidad: currentStats.responsabilidad + scores.responsabilidad,
@@ -120,7 +121,7 @@ export default function App() {
   const handleResetScores = async () => {
     try {
       const updatedVolunteers = await Promise.all(volunteers.map(async (v) => {
-        const resetStats = { puntualidad: 0, orden: 0, responsabilidad: 0, extraPoints: 0, total: 0 };
+        const resetStats = { ...v.stats, puntualidad: 0, orden: 0, responsabilidad: 0, extraPoints: 0, total: 0 };
         await volunteerService.updateVolunteer(v.id, { stats: resetStats });
         return { ...v, stats: resetStats };
       }));

@@ -7,6 +7,7 @@ export interface VolunteerStats {
   responsabilidad: number;
   extraPoints: number;
   total: number;
+  active?: boolean;
 }
 
 export interface Volunteer {

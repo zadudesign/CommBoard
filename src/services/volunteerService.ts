@@ -24,11 +24,13 @@ class SupabaseVolunteerService implements IVolunteerService {
       photoUrl: v.photo_url,
       createdAt: v.created_at ? new Date(v.created_at).getTime() : undefined,
       restrictedDates: v.restricted_dates,
-      active: v.active ?? true
+      active: v.stats?.active ?? v.active ?? true
     } as Volunteer));
   }
 
   async addVolunteer(volunteer: Omit<Volunteer, 'id'>): Promise<Volunteer> {
+    const statsWithActive = { ...(volunteer.stats || {}), active: volunteer.active ?? true };
+    
     const { data, error } = await supabase
       .from(this.tableName)
       .insert([{
@@ -36,9 +38,8 @@ class SupabaseVolunteerService implements IVolunteerService {
         photo_url: volunteer.photoUrl,
         roles: volunteer.roles,
         days: volunteer.days,
-        stats: volunteer.stats,
-        restricted_dates: volunteer.restrictedDates,
-        active: volunteer.active ?? true
+        stats: statsWithActive,
+        restricted_dates: volunteer.restrictedDates
       }])
       .select()
       .single();
@@ -49,7 +50,8 @@ class SupabaseVolunteerService implements IVolunteerService {
       ...data,
       photoUrl: data.photo_url,
       createdAt: data.created_at ? new Date(data.created_at).getTime() : undefined,
-      restrictedDates: data.restricted_dates
+      restrictedDates: data.restricted_dates,
+      active: data.stats?.active ?? true
     } as Volunteer;
   }
 
@@ -59,9 +61,22 @@ class SupabaseVolunteerService implements IVolunteerService {
     if (volunteer.photoUrl !== undefined) updateData.photo_url = volunteer.photoUrl;
     if (volunteer.roles !== undefined) updateData.roles = volunteer.roles;
     if (volunteer.days !== undefined) updateData.days = volunteer.days;
-    if (volunteer.stats !== undefined) updateData.stats = volunteer.stats;
     if (volunteer.restrictedDates !== undefined) updateData.restricted_dates = volunteer.restrictedDates;
-    if (volunteer.active !== undefined) updateData.active = volunteer.active;
+    
+    if (volunteer.active !== undefined || volunteer.stats !== undefined) {
+      // Fetch current stats to merge properly
+      const { data: currentData } = await supabase.from(this.tableName).select('stats').eq('id', id).single();
+      const currentStats = currentData?.stats || {};
+      
+      updateData.stats = {
+        ...currentStats,
+        ...(volunteer.stats || {})
+      };
+      
+      if (volunteer.active !== undefined) {
+        updateData.stats.active = volunteer.active;
+      }
+    }
 
     const { error } = await supabase
       .from(this.tableName)
