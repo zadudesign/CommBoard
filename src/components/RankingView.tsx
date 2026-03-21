@@ -391,8 +391,9 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       ) : (
         <>
           {/* Podium for Top 3 */}
-          <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 sm:gap-6 mt-12 mb-16 px-4">
-            {/* 2nd Place (Silver) */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6 sm:p-10 mb-8 mt-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 sm:gap-6 mt-4 mb-2">
+              {/* 2nd Place (Silver) */}
             {top3[1] && (
               <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
                 <div className="relative mb-4">
@@ -487,6 +488,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                 </div>
               </div>
             )}
+            </div>
           </div>
 
           {/* Rest of Top 10 */}
