@@ -81,8 +81,8 @@ export function RoleTasksManager() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <ClipboardList className="text-brand-primary" size={20} />
+          <h3 className="text-lg font-black text-brand-primary flex items-center gap-2 uppercase tracking-tight">
+            <ClipboardList className="text-brand-accent" size={20} />
             Tareas por Función
           </h3>
           <p className="text-gray-500 text-sm">
@@ -92,7 +92,7 @@ export function RoleTasksManager() {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-medium hover:bg-brand-primary/90 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary text-white rounded-xl font-black hover:bg-brand-secondary transition-all shadow-md active:scale-95 disabled:opacity-50 uppercase tracking-widest text-xs"
         >
           <Save size={18} />
           {isSaving ? 'Guardando...' : 'Guardar Cambios'}
@@ -103,8 +103,8 @@ export function RoleTasksManager() {
         {roles.map(role => {
           const rt = roleTasks.find(r => r.role === role) || { role, tasks: [] };
           return (
-            <div key={role} className="bg-gray-50 rounded-xl border border-gray-200 p-4 space-y-4">
-              <h4 className="font-bold text-brand-secondary border-b border-gray-200 pb-2">
+            <div key={role} className="bg-brand-light/10 rounded-2xl border border-brand-light/30 p-5 space-y-4 shadow-sm">
+              <h4 className="font-black text-brand-secondary border-b border-brand-light/30 pb-2 uppercase tracking-wider text-sm">
                 {role}
               </h4>
               
@@ -139,7 +139,7 @@ export function RoleTasksManager() {
                 />
                 <button
                   onClick={() => handleAddTask(role)}
-                  className="bg-gray-200 text-gray-700 p-1.5 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="bg-brand-accent text-white p-2 rounded-xl hover:bg-brand-accent/90 transition-all shadow-sm active:scale-90"
                 >
                   <Plus size={18} />
                 </button>

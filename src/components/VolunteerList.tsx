@@ -93,14 +93,14 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-gray-900">Voluntarios</h2>
+            <h2 className="text-2xl font-black text-brand-primary tracking-tight">Voluntarios</h2>
             {isAdmin && (
-              <span className="bg-brand-primary/10 text-brand-primary text-sm font-bold px-3 py-1 rounded-full">
+              <span className="bg-brand-accent text-white text-xs font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wider">
                 {filteredVolunteers.length} {filteredVolunteers.length === 1 ? 'activo' : 'activos'}
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-sm mt-1 font-medium">
             {isAdmin ? 'Gestiona el equipo de comunicaciones' : 'Conoce al equipo de comunicaciones'}
           </p>
         </div>
@@ -108,24 +108,24 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           {isAdmin && (
             <>
-              <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm flex-1 md:flex-none">
-                <Filter size={16} className="text-gray-400" />
+              <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border border-brand-light/50 shadow-sm flex-1 md:flex-none">
+                <Filter size={16} className="text-brand-secondary" />
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value as Role | 'Todos')}
-                  className="text-sm font-medium text-gray-700 bg-transparent outline-none cursor-pointer w-full"
+                  className="text-sm font-bold text-brand-primary bg-transparent outline-none cursor-pointer w-full"
                 >
                   <option value="Todos">Todas las funciones</option>
                   {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               
-              <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm flex-1 md:flex-none">
-                <Filter size={16} className="text-gray-400" />
+              <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border border-brand-light/50 shadow-sm flex-1 md:flex-none">
+                <Filter size={16} className="text-brand-secondary" />
                 <select
                   value={dayFilter}
                   onChange={(e) => setDayFilter(e.target.value as Day | 'Todos')}
-                  className="text-sm font-medium text-gray-700 bg-transparent outline-none cursor-pointer w-full"
+                  className="text-sm font-bold text-brand-primary bg-transparent outline-none cursor-pointer w-full"
                 >
                   <option value="Todos">Todos los días</option>
                   {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
@@ -137,10 +137,10 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
           {isAdmin && (
             <button
               onClick={onAdd}
-              className="flex items-center justify-center gap-2 bg-brand-primary text-white px-4 py-2 rounded-xl hover:bg-brand-secondary transition-colors shadow-sm w-full md:w-auto"
+              className="flex items-center justify-center gap-2 bg-brand-primary text-white px-5 py-2.5 rounded-2xl hover:bg-brand-secondary transition-all shadow-md active:scale-95 w-full md:w-auto"
             >
               <UserPlus size={18} />
-              <span className="font-medium">Nuevo Voluntario</span>
+              <span className="font-bold uppercase tracking-wider text-sm">Nuevo Voluntario</span>
             </button>
           )}
         </div>
@@ -175,30 +175,30 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredVolunteers.map(v => (
-            <div key={v.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
+            <div key={v.id} className="bg-white p-6 rounded-3xl border border-brand-light/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col justify-between">
               <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-16 rounded-full bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                <div className="flex justify-between items-start mb-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-full bg-brand-light/20 border-2 border-brand-light/50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                       {v.photoUrl ? (
                         <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-2xl font-bold text-brand-primary">{v.name.charAt(0)}</span>
+                        <span className="text-3xl font-black text-brand-primary">{v.name.charAt(0)}</span>
                       )}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg text-gray-900 leading-tight">{v.name}</h3>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        <div className="flex items-center gap-1 text-xs font-medium text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-md">
-                          <CalendarCheck2 size={12} />
+                      <h3 className="font-black text-lg text-brand-primary leading-tight tracking-tight">{v.name}</h3>
+                      <div className="flex flex-wrap gap-2 mt-1.5">
+                        <div className="flex items-center gap-1 text-[10px] font-black text-white bg-brand-secondary px-2 py-0.5 rounded-lg uppercase tracking-wider shadow-sm">
+                          <CalendarCheck2 size={10} />
                           {getVolunteerShiftCount(v.id)} {getVolunteerShiftCount(v.id) === 1 ? 'turno' : 'turnos'}
                         </div>
                         {v.stats?.extraPoints !== undefined && v.stats.extraPoints !== 0 && (
                           <div className={clsx(
-                            "flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md",
-                            v.stats.extraPoints > 0 ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-red-50 text-red-600 border border-red-100"
+                            "flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-lg uppercase tracking-wider shadow-sm",
+                            v.stats.extraPoints > 0 ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
                           )}>
-                            <Star size={12} fill="currentColor" />
+                            <Star size={10} fill="currentColor" />
                             {v.stats.extraPoints > 0 ? `+${v.stats.extraPoints}` : v.stats.extraPoints} extra
                           </div>
                         )}
@@ -206,34 +206,34 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                     </div>
                   </div>
                   {isAdmin && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <button 
                         onClick={() => handleAddExtraPoints(v.id, v.stats?.extraPoints || 0)} 
                         disabled={isUpdatingExtra === v.id}
-                        className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50" 
+                        className="p-2 text-brand-secondary hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all disabled:opacity-50" 
                         title="Agregar Puntos Extra"
                       >
-                        <PlusCircle size={16} />
+                        <PlusCircle size={18} />
                       </button>
-                      <button onClick={() => onEdit(v)} className="p-1.5 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors" title="Editar">
-                        <Edit2 size={16} />
+                      <button onClick={() => onEdit(v)} className="p-2 text-brand-secondary hover:text-brand-primary hover:bg-brand-light/20 rounded-xl transition-all" title="Editar">
+                        <Edit2 size={18} />
                       </button>
-                      <button onClick={() => onDelete(v.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar">
-                        <Trash2 size={16} />
+                      <button onClick={() => onDelete(v.id)} className="p-2 text-brand-secondary hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Eliminar">
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-start gap-2">
-                    <Briefcase size={16} className="text-brand-accent mt-0.5 shrink-0" />
-                    <div className="flex flex-wrap gap-1">
+                <div className="space-y-3.5">
+                  <div className="flex items-start gap-3">
+                    <Briefcase size={18} className="text-brand-accent mt-0.5 shrink-0" />
+                    <div className="flex flex-wrap gap-1.5">
                       {v.roles.map(r => {
                         const config = ROLE_CONFIG[r];
                         const Icon = config.icon;
                         return (
-                          <span key={r} className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md ${config.bg} ${config.color} border ${config.border}`}>
+                          <span key={r} className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg border shadow-sm ${config.bg} ${config.color} ${config.border} uppercase tracking-wider`}>
                             <Icon size={12} />
                             {r}
                           </span>
@@ -242,11 +242,11 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-2">
-                    <Calendar size={16} className="text-brand-primary mt-0.5 shrink-0" />
-                    <div className="flex flex-wrap gap-1">
+                  <div className="flex items-start gap-3">
+                    <Calendar size={18} className="text-brand-secondary mt-0.5 shrink-0" />
+                    <div className="flex flex-wrap gap-1.5">
                       {v.days.map(d => (
-                        <span key={d} className="text-xs font-medium bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-md">
+                        <span key={d} className="text-[10px] font-bold bg-brand-light/20 text-brand-secondary px-2.5 py-1 rounded-lg border border-brand-light/30 uppercase tracking-wider">
                           {d}
                         </span>
                       ))}
@@ -254,14 +254,14 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                   </div>
 
                   {v.restrictedDates && v.restrictedDates.length > 0 && (
-                    <div className="flex items-start gap-2">
-                      <CalendarOff size={16} className="text-red-400 mt-0.5 shrink-0" />
-                      <div className="flex flex-wrap gap-1">
+                    <div className="flex items-start gap-3">
+                      <CalendarOff size={18} className="text-red-400 mt-0.5 shrink-0" />
+                      <div className="flex flex-wrap gap-1.5">
                         {v.restrictedDates.map(date => {
                           const [year, month, day] = date.split('-');
                           const formattedDate = `${day}/${month}/${year}`;
                           return (
-                            <span key={date} className="text-xs font-medium bg-red-50 text-red-600 px-2 py-0.5 rounded-md border border-red-100">
+                            <span key={date} className="text-[10px] font-bold bg-red-50 text-red-600 px-2.5 py-1 rounded-lg border border-red-100 uppercase tracking-wider">
                               {formattedDate}
                             </span>
                           );
@@ -272,12 +272,12 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                 </div>
               </div>
               
-              <div className="mt-5 pt-4 border-t border-gray-50">
+              <div className="mt-6 pt-5 border-t border-brand-light/20">
                 <button 
                   onClick={() => onSelectVolunteer(v.id)}
-                  className="w-full flex items-center justify-center gap-2 py-2 text-sm font-medium text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 text-sm font-black text-white bg-brand-primary hover:bg-brand-secondary rounded-xl transition-all shadow-md active:scale-95 uppercase tracking-widest"
                 >
-                  <Eye size={16} />
+                  <Eye size={18} />
                   Ver mis turnos
                 </button>
               </div>

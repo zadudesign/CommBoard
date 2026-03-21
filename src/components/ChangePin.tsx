@@ -40,9 +40,9 @@ export function ChangePin({ onClose }: ChangePinProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <KeyRound size={20} className="text-brand-primary" /> Cambiar PIN
+        <div className="flex justify-between items-center p-6 border-b border-brand-light/20 bg-brand-primary/5">
+          <h2 className="text-xl font-black text-brand-primary flex items-center gap-2 uppercase tracking-tight">
+            <KeyRound size={20} className="text-brand-accent" /> Cambiar PIN
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X size={24} />
@@ -58,7 +58,7 @@ export function ChangePin({ onClose }: ChangePinProps) {
           ) : (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">PIN Actual</label>
+                <label className="block text-xs font-black text-brand-secondary mb-2 uppercase tracking-widest">PIN Actual</label>
                 <input
                   type="password"
                   value={oldPin}
@@ -66,14 +66,14 @@ export function ChangePin({ onClose }: ChangePinProps) {
                     setOldPin(e.target.value);
                     setError('');
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none text-center text-2xl tracking-[0.5em] font-mono transition-all"
+                  className="w-full px-4 py-3 border border-brand-light/50 rounded-2xl focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary outline-none text-center text-2xl tracking-[0.5em] font-mono transition-all bg-brand-light/5 text-brand-primary shadow-inner"
                   maxLength={8}
                   placeholder="••••"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Nuevo PIN</label>
+                <label className="block text-xs font-black text-brand-secondary mb-2 uppercase tracking-widest">Nuevo PIN</label>
                 <input
                   type="password"
                   value={newPin}
@@ -81,18 +81,18 @@ export function ChangePin({ onClose }: ChangePinProps) {
                     setNewPin(e.target.value);
                     setError('');
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none text-center text-2xl tracking-[0.5em] font-mono transition-all"
+                  className="w-full px-4 py-3 border border-brand-light/50 rounded-2xl focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary outline-none text-center text-2xl tracking-[0.5em] font-mono transition-all bg-brand-light/5 text-brand-primary shadow-inner"
                   maxLength={8}
                   placeholder="••••"
                 />
               </div>
               
-              {error && <p className="text-red-500 text-sm font-medium text-center">{error}</p>}
+              {error && <p className="text-red-600 text-xs font-black text-center uppercase tracking-wider">{error}</p>}
               
               <button
                 type="submit"
                 disabled={!oldPin || !newPin || isLoading}
-                className="w-full bg-brand-primary text-white py-3 rounded-xl hover:bg-brand-secondary transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+                className="w-full bg-brand-primary text-white py-4 rounded-2xl hover:bg-brand-secondary transition-all font-black shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center uppercase tracking-widest text-sm"
               >
                 {isLoading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

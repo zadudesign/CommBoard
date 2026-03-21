@@ -159,27 +159,32 @@ export default function App() {
   return (
     <div className="min-h-screen bg-brand-bg font-sans text-gray-900">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+      <header className="bg-brand-primary border-b border-brand-secondary sticky top-0 z-30 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-3 sm:py-0 gap-3">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-20 py-4 sm:py-0 gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-brand-primary p-2 rounded-xl text-white">
-                <MessageSquare size={24} />
+              <div className="bg-brand-accent p-2.5 rounded-xl text-white shadow-lg">
+                <MessageSquare size={26} />
               </div>
-              <h1 className="text-xl font-bold text-brand-secondary">
-                Comunicaciones IASD Central
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-black text-white tracking-tight">
+                  IASD CENTRAL
+                </h1>
+                <span className="text-[10px] font-bold text-brand-light uppercase tracking-[0.2em]">
+                  Comunicaciones
+                </span>
+              </div>
             </div>
             
             {/* Navigation */}
-            <div className="flex flex-wrap items-center gap-3">
-              <nav className="flex gap-1 bg-gray-100 p-1 rounded-xl">
+            <div className="flex flex-wrap items-center gap-4">
+              <nav className="flex gap-1.5 bg-brand-secondary/30 p-1.5 rounded-2xl backdrop-blur-sm">
                 <button
                   onClick={() => setActiveTab('schedule')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === 'schedule'
-                      ? 'bg-white text-brand-primary shadow-sm'
-                      : 'text-gray-500 hover:text-brand-primary hover:bg-gray-200/50'
+                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <CalendarDays size={18} />
@@ -188,10 +193,10 @@ export default function App() {
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('volunteers')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === 'volunteers'
-                      ? 'bg-white text-brand-primary shadow-sm'
-                      : 'text-gray-500 hover:text-brand-primary hover:bg-gray-200/50'
+                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Users size={18} />
@@ -200,10 +205,10 @@ export default function App() {
               )}
                 <button
                   onClick={() => setActiveTab('ranking')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === 'ranking'
-                      ? 'bg-white text-brand-primary shadow-sm'
-                      : 'text-gray-500 hover:text-brand-primary hover:bg-gray-200/50'
+                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Trophy size={18} />
@@ -212,10 +217,10 @@ export default function App() {
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('settings')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                     activeTab === 'settings'
-                      ? 'bg-white text-brand-primary shadow-sm'
-                      : 'text-gray-500 hover:text-brand-primary hover:bg-gray-200/50'
+                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Settings size={18} />
@@ -224,33 +229,33 @@ export default function App() {
               )}
               </nav>
 
-              <div className="h-6 w-px bg-gray-300 hidden sm:block"></div>
+              <div className="h-8 w-px bg-white/20 hidden sm:block"></div>
 
               {/* Admin Controls */}
               {isAdmin ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => setShowChangePinModal(true)}
-                    className="p-2 text-gray-500 hover:text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors"
+                    className="p-2.5 text-brand-light hover:text-white hover:bg-white/10 rounded-xl transition-all"
                     title="Cambiar PIN"
                   >
-                    <KeyRound size={20} />
+                    <KeyRound size={22} />
                   </button>
                   <button
                     onClick={() => {
                       setIsAdmin(false);
                       if (activeTab === 'volunteers') setActiveTab('schedule');
                     }}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-black text-white bg-brand-accent hover:bg-brand-accent/90 rounded-xl transition-all shadow-lg active:scale-95"
                   >
                     <ShieldCheck size={18} />
-                    <span className="hidden sm:inline">Admin Activo</span>
+                    <span className="hidden sm:inline">ADMIN ACTIVO</span>
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowLoginModal(true)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-brand-light hover:text-white hover:bg-white/10 rounded-xl transition-all border border-white/10"
                 >
                   <ShieldAlert size={18} />
                   <span className="hidden sm:inline">Acceso Admin</span>

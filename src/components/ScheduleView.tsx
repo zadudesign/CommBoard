@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Volunteer, Shift, ScheduleConfig } from '../types';
+import { Volunteer, Shift, ScheduleConfig, Role } from '../types';
 import { generateSchedule, SERVICES } from '../utils/scheduler';
 import { scheduleService } from '../services/scheduleService';
 import { CalendarDays, AlertCircle, RefreshCw, Settings2, UserCircle2, Calendar as CalendarIcon, CalendarRange, Star, CheckCircle2, ChevronLeft, ChevronRight, List, Grid, Download, PlusCircle, X, Trash2, Info } from 'lucide-react';
@@ -420,11 +420,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h2 className="text-2xl font-bold text-gray-900">Calendario</h2>
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1 text-sm font-medium border border-gray-200 shadow-sm">
-              <button onClick={handlePrevMonth} className="p-1 text-gray-500 hover:text-brand-primary hover:bg-gray-50 rounded-md transition-all"><ChevronLeft size={18}/></button>
-              <span className="w-36 text-center capitalize text-brand-primary font-bold">{getMonthName(selectedMonth, selectedYear)}</span>
-              <button onClick={handleNextMonth} className="p-1 text-gray-500 hover:text-brand-primary hover:bg-gray-50 rounded-md transition-all"><ChevronRight size={18}/></button>
+            <h2 className="text-2xl font-black text-brand-primary tracking-tight">Calendario</h2>
+            <div className="flex items-center gap-1 bg-white rounded-xl p-1 text-sm font-bold border border-brand-light/50 shadow-sm">
+              <button onClick={handlePrevMonth} className="p-1.5 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-lg transition-all"><ChevronLeft size={20}/></button>
+              <span className="w-40 text-center capitalize text-brand-primary font-black tracking-wide">{getMonthName(selectedMonth, selectedYear)}</span>
+              <button onClick={handleNextMonth} className="p-1.5 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-lg transition-all"><ChevronRight size={20}/></button>
             </div>
           </div>
           <p className="text-gray-500 text-sm mt-1">
@@ -432,128 +432,128 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* View Mode Toggle */}
-          <div className="flex bg-gray-100 p-1 rounded-xl">
-            <button
-              onClick={() => setViewMode('list')}
-              className={clsx(
-                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
-                viewMode === 'list' ? "bg-white text-brand-primary shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-              )}
-            >
-              <List size={16} />
-              Lista
-            </button>
-            <button
-              onClick={() => setViewMode('weekly')}
-              className={clsx(
-                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
-                viewMode === 'weekly' ? "bg-white text-brand-primary shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-              )}
-            >
-              <CalendarIcon size={16} />
-              Semanal
-            </button>
-            <button
-              onClick={() => setViewMode('monthly')}
-              className={clsx(
-                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
-                viewMode === 'monthly' ? "bg-white text-brand-primary shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-              )}
-            >
-              <CalendarRange size={16} />
-              Mensual
-            </button>
-            {isAdmin && (
+          <div className="flex flex-wrap items-center gap-3">
+            {/* View Mode Toggle */}
+            <div className="flex bg-brand-primary/5 p-1.5 rounded-2xl border border-brand-light/30 shadow-inner">
               <button
-                onClick={() => setViewMode('calendar')}
+                onClick={() => setViewMode('list')}
                 className={clsx(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors",
-                  viewMode === 'calendar' ? "bg-white text-brand-primary shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
+                  viewMode === 'list' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
                 )}
               >
-                <Grid size={16} />
-                Calendario
-              </button>
-            )}
-          </div>
-
-          {/* Volunteer Selector */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm">
-            <UserCircle2 size={18} className="text-brand-primary" />
-            <select
-              value={selectedVolunteerId || ''}
-              onChange={(e) => onSelectVolunteer(e.target.value || null)}
-              className="text-sm font-medium text-gray-700 bg-transparent outline-none cursor-pointer"
-            >
-              <option value="">Ver todos los turnos</option>
-              {volunteers.map(v => (
-                <option key={v.id} value={v.id}>{v.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Admin Controls */}
-          {isAdmin && (
-            <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-200 shadow-sm">
-              <div className="flex items-center gap-2 px-3 border-r border-gray-200">
-                <Settings2 size={16} className="text-gray-400" />
-                <span className="text-sm font-medium text-gray-600">Max/Mes:</span>
-                <select
-                  value={config.maxPerMonth}
-                  onChange={(e) => setConfig({ ...config, maxPerMonth: Number(e.target.value) })}
-                  className="text-sm font-bold text-brand-primary bg-transparent outline-none cursor-pointer"
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16].map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-              </div>
-              <button
-                onClick={handleGenerate}
-                disabled={isGenerating || volunteers.length === 0}
-                className="flex items-center gap-2 bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-brand-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
-              >
-                <RefreshCw size={16} className={isGenerating ? 'animate-spin' : ''} />
-                <span className="hidden sm:inline">Generar</span>
+                <List size={14} />
+                Lista
               </button>
               <button
-                onClick={handleDeleteMonthSchedule}
-                disabled={currentMonthSchedule.length === 0 || isGenerating}
-                className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm border border-red-200"
-                title="Borrar turnos del mes"
+                onClick={() => setViewMode('weekly')}
+                className={clsx(
+                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
+                  viewMode === 'weekly' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                )}
               >
-                <Trash2 size={16} />
-                <span className="hidden sm:inline">Borrar</span>
+                <CalendarIcon size={14} />
+                Semanal
               </button>
               <button
-                onClick={handleDownloadCSV}
-                disabled={filteredSchedule.length === 0}
-                className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
-                title="Descargar CSV"
+                onClick={() => setViewMode('monthly')}
+                className={clsx(
+                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
+                  viewMode === 'monthly' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                )}
               >
-                <Download size={16} />
-                <span className="hidden sm:inline">CSV</span>
+                <CalendarRange size={14} />
+                Mensual
               </button>
-              <button
-                onClick={() => setIsEventFormOpen(true)}
-                className="flex items-center gap-2 bg-brand-accent text-white px-4 py-2 rounded-lg hover:bg-brand-accent/90 transition-colors font-medium text-sm"
-              >
-                <PlusCircle size={16} />
-                <span className="hidden sm:inline">Evento</span>
-              </button>
-              {specialEvents.length > 0 && (
+              {isAdmin && (
                 <button
-                  onClick={() => setIsManageEventsOpen(true)}
-                  className="flex items-center gap-2 bg-white text-gray-600 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
-                  title="Gestionar Eventos"
+                  onClick={() => setViewMode('calendar')}
+                  className={clsx(
+                    "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
+                    viewMode === 'calendar' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                  )}
                 >
-                  <CalendarRange size={16} />
-                  <span className="hidden sm:inline">Gestionar</span>
+                  <Grid size={14} />
+                  Calendario
                 </button>
               )}
             </div>
-          )}
-        </div>
+
+            {/* Volunteer Selector */}
+            <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border border-brand-light/50 shadow-sm hover:border-brand-primary/50 transition-all">
+              <UserCircle2 size={20} className="text-brand-accent" />
+              <select
+                value={selectedVolunteerId || ''}
+                onChange={(e) => onSelectVolunteer(e.target.value || null)}
+                className="text-xs font-black text-brand-primary bg-transparent outline-none cursor-pointer uppercase tracking-wider"
+              >
+                <option value="">Ver todos los turnos</option>
+                {volunteers.map(v => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Admin Controls */}
+            {isAdmin && (
+              <div className="flex items-center gap-3 bg-white p-2.5 rounded-2xl border border-brand-light/50 shadow-sm">
+                <div className="flex items-center gap-2 px-3 border-r border-brand-light/30">
+                  <Settings2 size={18} className="text-brand-secondary" />
+                  <span className="text-xs font-black text-brand-secondary uppercase tracking-widest">Max/Mes:</span>
+                  <select
+                    value={config.maxPerMonth}
+                    onChange={(e) => setConfig({ ...config, maxPerMonth: Number(e.target.value) })}
+                    className="text-xs font-black text-brand-accent bg-transparent outline-none cursor-pointer"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16].map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || volunteers.length === 0}
+                  className="flex items-center gap-2 bg-brand-primary text-white px-5 py-2.5 rounded-xl hover:bg-brand-secondary transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                >
+                  <RefreshCw size={18} className={isGenerating ? 'animate-spin' : ''} />
+                  <span className="hidden sm:inline">Generar</span>
+                </button>
+                <button
+                  onClick={handleDeleteMonthSchedule}
+                  disabled={currentMonthSchedule.length === 0 || isGenerating}
+                  className="flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  title="Borrar turnos del mes"
+                >
+                  <Trash2 size={18} />
+                  <span className="hidden sm:inline">Borrar</span>
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  disabled={filteredSchedule.length === 0}
+                  className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  title="Descargar CSV"
+                >
+                  <Download size={18} />
+                  <span className="hidden sm:inline">CSV</span>
+                </button>
+                <button
+                  onClick={() => setIsEventFormOpen(true)}
+                  className="flex items-center gap-2 bg-brand-accent text-white px-5 py-2.5 rounded-xl hover:bg-brand-accent/90 transition-all font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                >
+                  <PlusCircle size={18} />
+                  <span className="hidden sm:inline">Evento</span>
+                </button>
+                {specialEvents.length > 0 && (
+                  <button
+                    onClick={() => setIsManageEventsOpen(true)}
+                    className="flex items-center gap-2 bg-brand-light/10 text-brand-secondary border border-brand-light/50 px-4 py-2.5 rounded-xl hover:bg-brand-light/20 transition-all font-black text-xs shadow-sm uppercase tracking-widest"
+                    title="Gestionar Eventos"
+                  >
+                    <CalendarRange size={18} />
+                    <span className="hidden sm:inline">Gestionar</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
       </div>
 
       {currentMonthSchedule.length === 0 ? (
@@ -592,21 +592,21 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
           )}
 
           {selectedVolunteer && (
-            <div className="bg-gradient-to-r from-brand-primary/10 to-transparent p-6 rounded-2xl border border-brand-primary/20 flex items-center gap-6 mb-6">
-              <div className="w-20 h-20 rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+            <div className="bg-gradient-to-r from-brand-primary/10 to-transparent p-8 rounded-3xl border border-brand-primary/20 flex items-center gap-8 mb-8 shadow-sm">
+              <div className="w-24 h-24 rounded-full bg-white border-4 border-white shadow-xl flex items-center justify-center overflow-hidden shrink-0">
                 {selectedVolunteer.photoUrl ? (
                   <img src={selectedVolunteer.photoUrl} alt={selectedVolunteer.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-3xl font-bold text-brand-primary">{selectedVolunteer.name.charAt(0)}</span>
+                  <span className="text-4xl font-black text-brand-primary">{selectedVolunteer.name.charAt(0)}</span>
                 )}
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-brand-primary">{selectedVolunteer.name}</h3>
-                <p className="text-gray-600 font-medium mt-1">
+                <h3 className="text-3xl font-black text-brand-primary uppercase tracking-tight">{selectedVolunteer.name}</h3>
+                <p className="text-brand-secondary font-bold mt-1 uppercase tracking-widest text-xs">
                   Mostrando turnos asignados para {getMonthName(selectedMonth, selectedYear)}
                 </p>
-                <div className="flex items-center gap-1 text-sm font-bold text-brand-primary mt-2 bg-white/50 px-3 py-1 rounded-lg inline-flex border border-brand-primary/10">
-                  <CalendarIcon size={16} />
+                <div className="flex items-center gap-2 text-xs font-black text-brand-primary mt-3 bg-white/80 px-4 py-2 rounded-xl inline-flex border border-brand-primary/10 shadow-sm uppercase tracking-wider">
+                  <CalendarIcon size={16} className="text-brand-accent" />
                   {selectedVolunteerShiftCount} {selectedVolunteerShiftCount === 1 ? 'turno asignado' : 'turnos asignados'} en este mes
                 </div>
               </div>
@@ -1293,10 +1293,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               {/* Decorative background icon */}
               <div className={clsx(
                 "absolute -right-6 -bottom-6 opacity-5 rotate-12",
-                ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'
+                ROLE_CONFIG[viewingTasksRole as Role]?.color || 'text-brand-primary'
               )}>
                 {(() => {
-                  const RoleIcon = ROLE_CONFIG[viewingTasksRole]?.icon || Info;
+                  const RoleIcon = ROLE_CONFIG[viewingTasksRole as Role]?.icon || Info;
                   return <RoleIcon size={120} />;
                 })()}
               </div>
@@ -1304,17 +1304,17 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               <div className="flex items-center gap-4 relative z-10">
                 <div className={clsx(
                   "p-3 rounded-2xl shadow-inner",
-                  ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-brand-primary/10'
+                  ROLE_CONFIG[viewingTasksRole as Role]?.bg || 'bg-brand-primary/10'
                 )}>
                   {(() => {
-                    const RoleIcon = ROLE_CONFIG[viewingTasksRole]?.icon || Info;
-                    return <RoleIcon size={28} className={ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'} />;
+                    const RoleIcon = ROLE_CONFIG[viewingTasksRole as Role]?.icon || Info;
+                    return <RoleIcon size={28} className={ROLE_CONFIG[viewingTasksRole as Role]?.color || 'text-brand-primary'} />;
                   })()}
                 </div>
                 <div>
                   <h2 className={clsx(
                     "text-2xl font-black tracking-tight",
-                    ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary'
+                    ROLE_CONFIG[viewingTasksRole as Role]?.color || 'text-brand-primary'
                   )}>
                     {viewingTasksRole}
                   </h2>
@@ -1325,7 +1325,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                 onClick={() => setViewingTasksRole(null)}
                 className={clsx(
                   "p-2 hover:bg-gray-100 rounded-xl transition-all relative z-10 active:scale-90",
-                  ROLE_CONFIG[viewingTasksRole]?.color || "text-gray-400"
+                  ROLE_CONFIG[viewingTasksRole as Role]?.color || "text-gray-400"
                 )}
               >
                 <X size={24} />
@@ -1334,7 +1334,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
             
             <div className={clsx(
               "p-6 overflow-y-auto flex-1",
-              ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-gray-50'
+              ROLE_CONFIG[viewingTasksRole as Role]?.bg || 'bg-gray-50'
             )}>
               <div className="space-y-4">
                 {(() => {
@@ -1344,9 +1344,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       <div className="text-center py-16 bg-white/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-gray-200">
                         <div className={clsx(
                           "mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4",
-                          ROLE_CONFIG[viewingTasksRole]?.bg || 'bg-gray-100'
+                          ROLE_CONFIG[viewingTasksRole as Role]?.bg || 'bg-gray-100'
                         )}>
-                          <Info className={ROLE_CONFIG[viewingTasksRole]?.color} size={32} />
+                          <Info className={ROLE_CONFIG[viewingTasksRole as Role]?.color} size={32} />
                         </div>
                         <p className="text-gray-500 font-medium">No hay tareas asignadas aún</p>
                         <p className="text-gray-400 text-xs mt-1">Contacta al administrador para definirlas</p>
@@ -1358,14 +1358,14 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       key={index} 
                       className={clsx(
                         "bg-white p-5 rounded-2xl border flex items-start gap-4 shadow-sm hover:shadow-md transition-all animate-in slide-in-from-bottom-2 duration-300",
-                        ROLE_CONFIG[viewingTasksRole]?.border || 'border-gray-100'
+                        ROLE_CONFIG[viewingTasksRole as Role]?.border || 'border-gray-100'
                       )}
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
                       <div className={clsx(
                         "mt-0.5 w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black shrink-0 shadow-sm border-2 bg-white",
-                        ROLE_CONFIG[viewingTasksRole]?.color || 'text-brand-primary',
-                        ROLE_CONFIG[viewingTasksRole]?.border || 'border-brand-primary'
+                        ROLE_CONFIG[viewingTasksRole as Role]?.color || 'text-brand-primary',
+                        ROLE_CONFIG[viewingTasksRole as Role]?.border || 'border-brand-primary'
                       )}>
                         {index + 1}
                       </div>
@@ -1381,9 +1381,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                 onClick={() => setViewingTasksRole(null)}
                 className={clsx(
                   "w-full py-4 px-6 text-white font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-wider text-sm",
-                  ROLE_CONFIG[viewingTasksRole]?.darkBg || 'bg-brand-primary',
+                  ROLE_CONFIG[viewingTasksRole as Role]?.darkBg || 'bg-brand-primary',
                   "hover:brightness-110 ring-4 ring-offset-2",
-                  ROLE_CONFIG[viewingTasksRole]?.bg?.replace('bg-', 'ring-') || 'ring-brand-primary/20'
+                  ROLE_CONFIG[viewingTasksRole as Role]?.bg?.replace('bg-', 'ring-') || 'ring-brand-primary/20'
                 )}
               >
                 Entendido

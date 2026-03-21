@@ -211,7 +211,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
           <div className="flex flex-col items-start gap-2">
             <p className="text-gray-500 text-sm">Clasificación de voluntarios por desempeño</p>
             {rankedVolunteers.length > 0 && (
-              <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100 shadow-sm">
+              <div className="flex items-center gap-1.5 bg-brand-accent/10 text-brand-accent px-3 py-1 rounded-full text-xs font-black border border-brand-accent/20 shadow-sm">
                 <Award size={14} />
                 Promedio Global: {globalAverage} pts
               </div>
@@ -392,30 +392,30 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
         <>
           {/* Podium for Top 3 */}
           <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 sm:gap-6 mt-12 mb-16 px-4">
-            {/* 2nd Place */}
+            {/* 2nd Place (Silver) */}
             {top3[1] && (
               <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
                 <div className="relative mb-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
+                  <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
                     {top3[1].photoUrl ? (
                       <img src={top3[1].photoUrl} alt={top3[1].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl font-bold text-gray-600">{top3[1].name.charAt(0)}</span>
+                      <span className="text-2xl font-black text-slate-500">{top3[1].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-gray-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
-                    <Medal size={20} className="text-gray-600" />
+                  <div className="absolute -bottom-3 -right-3 bg-slate-400 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
+                    <Medal size={20} className="text-white" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-gray-200 to-gray-100 w-full rounded-t-2xl border border-gray-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-40 flex flex-col justify-start">
-                  <p className="font-bold text-gray-800 line-clamp-2 leading-tight w-full px-2">{top3[1].name}</p>
-                  <p className="text-2xl font-black text-gray-600 mt-1">{top3[1].calculatedStats.total} <span className="text-xs font-normal text-gray-500">pts</span></p>
+                <div className="bg-gradient-to-t from-slate-300/40 to-slate-300/10 w-full rounded-t-2xl border border-slate-300/30 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-40 flex flex-col justify-start">
+                  <p className="font-black text-slate-700 line-clamp-2 leading-tight w-full px-2 uppercase tracking-tight">{top3[1].name}</p>
+                  <p className="text-2xl font-black text-slate-600 mt-1">{top3[1].calculatedStats.total} <span className="text-xs font-bold text-slate-500/70">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                    <p className="text-[10px] text-slate-500/60 uppercase font-black tracking-wider">
                       {top3[1].calculatedStats.shiftCount}/{top3[1].calculatedStats.assignedCount} turnos
                     </p>
                     {top3[1].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-emerald-600 font-bold">
+                      <p className="text-[10px] text-emerald-600 font-black">
                         {top3[1].calculatedStats.extraPoints > 0 ? `+${top3[1].calculatedStats.extraPoints}` : top3[1].calculatedStats.extraPoints} extra
                       </p>
                     )}
@@ -424,30 +424,30 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
               </div>
             )}
 
-            {/* 1st Place */}
+            {/* 1st Place (Gold) */}
             {top3[0] && (
               <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[220px] z-10">
                 <div className="relative mb-4">
-                  <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-10 relative overflow-hidden">
+                  <div className="w-28 h-28 bg-amber-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-10 relative overflow-hidden">
                     {top3[0].photoUrl ? (
                       <img src={top3[0].photoUrl} alt={top3[0].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-3xl font-bold text-yellow-600">{top3[0].name.charAt(0)}</span>
+                      <span className="text-3xl font-black text-amber-500">{top3[0].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-4 -right-4 bg-yellow-400 rounded-full p-2 border-2 border-white shadow-md z-20">
+                  <div className="absolute -bottom-4 -right-4 bg-amber-500 rounded-full p-2 border-2 border-white shadow-md z-20">
                     <Trophy size={24} className="text-white" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-yellow-200 to-yellow-100 w-full rounded-t-2xl border border-yellow-300 border-b-0 pt-8 pb-4 px-2 text-center shadow-md h-48 flex flex-col justify-start">
-                  <p className="font-bold text-yellow-900 line-clamp-2 leading-tight w-full px-2 text-lg">{top3[0].name}</p>
-                  <p className="text-3xl font-black text-yellow-700 mt-1">{top3[0].calculatedStats.total} <span className="text-sm font-normal text-yellow-600">pts</span></p>
+                <div className="bg-gradient-to-t from-amber-400/30 to-amber-400/10 w-full rounded-t-2xl border border-amber-400/40 border-b-0 pt-8 pb-4 px-2 text-center shadow-md h-48 flex flex-col justify-start">
+                  <p className="font-black text-amber-900 line-clamp-2 leading-tight w-full px-2 text-xl uppercase tracking-tighter">{top3[0].name}</p>
+                  <p className="text-3xl font-black text-amber-600 mt-1">{top3[0].calculatedStats.total} <span className="text-sm font-bold text-amber-600/70">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-xs text-yellow-600/70 uppercase font-bold tracking-wider">
+                    <p className="text-xs text-amber-700/80 uppercase font-black tracking-wider">
                       {top3[0].calculatedStats.shiftCount}/{top3[0].calculatedStats.assignedCount} turnos
                     </p>
                     {top3[0].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-yellow-700 font-bold">
+                      <p className="text-[10px] text-amber-600 font-black">
                         {top3[0].calculatedStats.extraPoints > 0 ? `+${top3[0].calculatedStats.extraPoints}` : top3[0].calculatedStats.extraPoints} extra
                       </p>
                     )}
@@ -456,30 +456,30 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
               </div>
             )}
 
-            {/* 3rd Place */}
+            {/* 3rd Place (Bronze) */}
             {top3[2] && (
               <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[200px]">
                 <div className="relative mb-4">
-                  <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
+                  <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
                     {top3[2].photoUrl ? (
                       <img src={top3[2].photoUrl} alt={top3[2].name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl font-bold text-orange-700">{top3[2].name.charAt(0)}</span>
+                      <span className="text-2xl font-black text-orange-700">{top3[2].name.charAt(0)}</span>
                     )}
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-orange-300 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
-                    <Award size={20} className="text-orange-800" />
+                  <div className="absolute -bottom-3 -right-3 bg-orange-700 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
+                    <Award size={20} className="text-white" />
                   </div>
                 </div>
-                <div className="bg-gradient-to-t from-orange-200 to-orange-100 w-full rounded-t-2xl border border-orange-200 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-36 flex flex-col justify-start">
-                  <p className="font-bold text-orange-900 line-clamp-2 leading-tight w-full px-2">{top3[2].name}</p>
-                  <p className="text-xl font-black text-orange-800 mt-1">{top3[2].calculatedStats.total} <span className="text-xs font-normal text-orange-700">pts</span></p>
+                <div className="bg-gradient-to-t from-orange-700/30 to-orange-700/10 w-full rounded-t-2xl border border-orange-700/40 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-36 flex flex-col justify-start">
+                  <p className="font-black text-orange-900 line-clamp-2 leading-tight w-full px-2 uppercase tracking-tight">{top3[2].name}</p>
+                  <p className="text-xl font-black text-orange-800 mt-1">{top3[2].calculatedStats.total} <span className="text-xs font-bold text-orange-800/70">pts</span></p>
                   <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-[10px] text-orange-700/60 uppercase font-bold tracking-wider">
+                    <p className="text-[10px] text-orange-800/60 uppercase font-black tracking-wider">
                       {top3[2].calculatedStats.shiftCount}/{top3[2].calculatedStats.assignedCount} turnos
                     </p>
                     {top3[2].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-orange-800 font-bold">
+                      <p className="text-[10px] text-orange-700 font-black">
                         {top3[2].calculatedStats.extraPoints > 0 ? `+${top3[2].calculatedStats.extraPoints}` : top3[2].calculatedStats.extraPoints} extra
                       </p>
                     )}
@@ -499,11 +499,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                       <div className="w-8 text-center font-bold text-gray-400">
                         #{index + 4}
                       </div>
-                      <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary font-bold overflow-hidden">
+                      <div className="w-16 h-16 bg-brand-primary/10 rounded-full flex items-center justify-center text-brand-primary font-black overflow-hidden border-2 border-brand-light/30 shrink-0">
                         {volunteer.photoUrl ? (
                           <img src={volunteer.photoUrl} alt={volunteer.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-lg">{volunteer.name.charAt(0)}</span>
+                          <span className="text-2xl">{volunteer.name.charAt(0)}</span>
                         )}
                       </div>
                       <p className="font-semibold text-gray-900">{volunteer.name}</p>

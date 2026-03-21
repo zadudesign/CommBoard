@@ -49,47 +49,47 @@ export function EvaluationModal({ volunteerName, onClose, onSubmit }: Evaluation
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">Evaluar Turno</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="flex justify-between items-center p-6 border-b border-brand-light/20 bg-brand-primary/5">
+          <h2 className="text-xl font-black text-brand-primary uppercase tracking-tight">Evaluar Turno</h2>
+          <button onClick={onClose} className="text-brand-secondary hover:text-brand-accent transition-all p-1 hover:bg-brand-light/20 rounded-lg">
             <X size={24} />
           </button>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="text-center mb-2">
-            <p className="text-sm text-gray-500">Voluntario</p>
-            <p className="font-semibold text-brand-primary text-lg">{volunteerName}</p>
+          <div className="text-center mb-2 bg-brand-light/10 p-4 rounded-2xl border border-brand-light/20">
+            <p className="text-[10px] font-black text-brand-secondary uppercase tracking-widest mb-1">Voluntario</p>
+            <p className="font-black text-brand-primary text-xl uppercase tracking-tight">{volunteerName}</p>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex flex-col items-center gap-3">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Puntualidad</label>
+          <div className="space-y-8">
+            <div className="flex flex-col items-center gap-4">
+              <label className="text-xs font-black text-brand-secondary uppercase tracking-widest">Puntualidad</label>
               {renderScoreButtons(puntualidad, setPuntualidad)}
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Orden</label>
+            <div className="flex flex-col items-center gap-4">
+              <label className="text-xs font-black text-brand-secondary uppercase tracking-widest">Orden</label>
               {renderScoreButtons(orden, setOrden)}
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-wider">Responsabilidad</label>
+            <div className="flex flex-col items-center gap-4">
+              <label className="text-xs font-black text-brand-secondary uppercase tracking-widest">Responsabilidad</label>
               {renderScoreButtons(responsabilidad, setResponsabilidad)}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 uppercase tracking-wider block">Nota / Detalle (Opcional)</label>
+            <div className="space-y-3">
+              <label className="text-xs font-black text-brand-secondary uppercase tracking-widest block">Nota / Detalle (Opcional)</label>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Ej. Excelente manejo de la consola, llegó temprano..."
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none transition-all text-sm min-h-[80px] resize-none"
+                className="w-full px-4 py-4 border border-brand-light/50 rounded-2xl focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary outline-none transition-all text-sm min-h-[100px] resize-none font-bold text-brand-primary placeholder:text-gray-300 shadow-inner"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-brand-primary text-white py-3 rounded-xl hover:bg-brand-secondary transition-colors font-medium"
+            className="w-full bg-brand-primary text-white py-4 rounded-2xl hover:bg-brand-secondary transition-all font-black shadow-lg active:scale-95 uppercase tracking-widest text-sm"
           >
             Guardar Evaluación
           </button>
