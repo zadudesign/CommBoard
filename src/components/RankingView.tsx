@@ -391,103 +391,127 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       ) : (
         <>
           {/* Podium for Top 3 */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6 sm:p-10 mb-8 mt-4">
-            <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-4 sm:gap-6 mt-4 mb-2">
+          <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden p-8 sm:p-12 mb-10 mt-4 relative">
+            {/* Decorative background element */}
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-primary via-brand-accent to-brand-secondary"></div>
+            
+            <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-6 sm:gap-10 mt-4 mb-2 relative z-10">
               {/* 2nd Place (Silver) */}
-            {top3[1] && (
-              <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
-                <div className="relative mb-4">
-                  <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
-                    {top3[1].photoUrl ? (
-                      <img src={top3[1].photoUrl} alt={top3[1].name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-black text-slate-500">{top3[1].name.charAt(0)}</span>
-                    )}
+              {top3[1] && (
+                <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
+                  <div className="relative mb-6 group">
+                    <div className="absolute -inset-1 bg-slate-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-slate-100 overflow-hidden bg-white shadow-lg ring-4 ring-slate-50">
+                      {top3[1].photoUrl ? (
+                        <img src={top3[1].photoUrl} alt={top3[1].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
+                          <User size={48} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-slate-400 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg">
+                      2
+                    </div>
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-slate-400 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
-                    <Medal size={20} className="text-white" />
-                  </div>
-                </div>
-                <div className="bg-gradient-to-t from-slate-300/40 to-slate-300/10 w-full rounded-t-2xl border border-slate-300/30 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-40 flex flex-col justify-start">
-                  <p className="font-black text-slate-700 line-clamp-2 leading-tight w-full px-2 uppercase tracking-tight">{top3[1].name}</p>
-                  <p className="text-2xl font-black text-slate-600 mt-1">{top3[1].calculatedStats.total} <span className="text-xs font-bold text-slate-500/70">pts</span></p>
-                  <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-[10px] text-slate-500/60 uppercase font-black tracking-wider">
-                      {top3[1].calculatedStats.shiftCount}/{top3[1].calculatedStats.assignedCount} turnos
-                    </p>
-                    {top3[1].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-emerald-600 font-black">
-                        {top3[1].calculatedStats.extraPoints > 0 ? `+${top3[1].calculatedStats.extraPoints}` : top3[1].calculatedStats.extraPoints} extra
+                  <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
+                    <h3 className="font-black text-slate-800 text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight">{top3[1].name}</h3>
+                    <div className="flex items-center justify-center gap-1.5 text-slate-500 font-bold text-lg">
+                      <Award size={18} />
+                      <span>{top3[1].calculatedStats.total} <span className="text-xs font-bold text-slate-400">pts</span></span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
+                      <p className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
+                        {top3[1].calculatedStats.shiftCount}/{top3[1].calculatedStats.assignedCount} turnos
                       </p>
-                    )}
+                      {top3[1].calculatedStats.extraPoints !== 0 && (
+                        <p className="text-[10px] text-emerald-600 font-black">
+                          {top3[1].calculatedStats.extraPoints > 0 ? `+${top3[1].calculatedStats.extraPoints}` : top3[1].calculatedStats.extraPoints} extra
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* 1st Place (Gold) */}
-            {top3[0] && (
-              <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[220px] z-10">
-                <div className="relative mb-4">
-                  <div className="w-28 h-28 bg-amber-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg z-10 relative overflow-hidden">
-                    {top3[0].photoUrl ? (
-                      <img src={top3[0].photoUrl} alt={top3[0].name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-3xl font-black text-amber-500">{top3[0].name.charAt(0)}</span>
-                    )}
+              {/* 1st Place (Gold) */}
+              {top3[0] && (
+                <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[240px] z-10 -translate-y-4 sm:-translate-y-8">
+                  <div className="relative mb-8 group">
+                    <div className="absolute -inset-2 bg-amber-400 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-8 border-amber-100 overflow-hidden bg-white shadow-2xl ring-8 ring-amber-50">
+                      {top3[0].photoUrl ? (
+                        <img src={top3[0].photoUrl} alt={top3[0].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-full h-full bg-amber-50 flex items-center justify-center text-amber-300">
+                          <User size={64} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-amber-500 animate-bounce drop-shadow-md">
+                      <Trophy size={48} fill="currentColor" />
+                    </div>
+                    <div className="absolute -bottom-3 -right-3 bg-amber-500 text-white w-14 h-14 rounded-full flex items-center justify-center border-4 border-white shadow-xl font-black text-2xl">
+                      1
+                    </div>
                   </div>
-                  <div className="absolute -bottom-4 -right-4 bg-amber-500 rounded-full p-2 border-2 border-white shadow-md z-20">
-                    <Trophy size={24} className="text-white" />
-                  </div>
-                </div>
-                <div className="bg-gradient-to-t from-amber-400/30 to-amber-400/10 w-full rounded-t-2xl border border-amber-400/40 border-b-0 pt-8 pb-4 px-2 text-center shadow-md h-48 flex flex-col justify-start">
-                  <p className="font-black text-amber-900 line-clamp-2 leading-tight w-full px-2 text-xl uppercase tracking-tighter">{top3[0].name}</p>
-                  <p className="text-3xl font-black text-amber-600 mt-1">{top3[0].calculatedStats.total} <span className="text-sm font-bold text-amber-600/70">pts</span></p>
-                  <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-xs text-amber-700/80 uppercase font-black tracking-wider">
-                      {top3[0].calculatedStats.shiftCount}/{top3[0].calculatedStats.assignedCount} turnos
-                    </p>
-                    {top3[0].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-amber-600 font-black">
-                        {top3[0].calculatedStats.extraPoints > 0 ? `+${top3[0].calculatedStats.extraPoints}` : top3[0].calculatedStats.extraPoints} extra
+                  <div className="text-center bg-white p-7 rounded-3xl border-2 border-amber-100 w-full shadow-xl ring-4 ring-amber-50/30 transform hover:-translate-y-2 transition-all">
+                    <h3 className="font-black text-amber-900 text-xl leading-tight mb-1 truncate px-2 uppercase tracking-tighter">{top3[0].name}</h3>
+                    <div className="flex items-center justify-center gap-2 text-amber-600 font-black text-2xl">
+                      <Medal size={24} />
+                      <span>{top3[0].calculatedStats.total} <span className="text-sm font-bold text-amber-500/70">pts</span></span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-amber-50 flex flex-col items-center gap-0.5">
+                      <p className="text-xs text-amber-700/80 uppercase font-black tracking-wider">
+                        {top3[0].calculatedStats.shiftCount}/{top3[0].calculatedStats.assignedCount} turnos
                       </p>
-                    )}
+                      {top3[0].calculatedStats.extraPoints !== 0 && (
+                        <p className="text-[10px] text-amber-600 font-black">
+                          {top3[0].calculatedStats.extraPoints > 0 ? `+${top3[0].calculatedStats.extraPoints}` : top3[0].calculatedStats.extraPoints} extra
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* 3rd Place (Bronze) */}
-            {top3[2] && (
-              <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[200px]">
-                <div className="relative mb-4">
-                  <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-md z-10 relative overflow-hidden">
-                    {top3[2].photoUrl ? (
-                      <img src={top3[2].photoUrl} alt={top3[2].name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-black text-orange-700">{top3[2].name.charAt(0)}</span>
-                    )}
+              {/* 3rd Place (Bronze) */}
+              {top3[2] && (
+                <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[200px]">
+                  <div className="relative mb-6 group">
+                    <div className="absolute -inset-1 bg-orange-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-orange-100 overflow-hidden bg-white shadow-lg ring-4 ring-orange-50">
+                      {top3[2].photoUrl ? (
+                        <img src={top3[2].photoUrl} alt={top3[2].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <div className="w-full h-full bg-orange-50 flex items-center justify-center text-orange-300">
+                          <User size={48} />
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg">
+                      3
+                    </div>
                   </div>
-                  <div className="absolute -bottom-3 -right-3 bg-orange-700 rounded-full p-1.5 border-2 border-white shadow-sm z-20">
-                    <Award size={20} className="text-white" />
-                  </div>
-                </div>
-                <div className="bg-gradient-to-t from-orange-700/30 to-orange-700/10 w-full rounded-t-2xl border border-orange-700/40 border-b-0 pt-6 pb-4 px-2 text-center shadow-sm h-36 flex flex-col justify-start">
-                  <p className="font-black text-orange-900 line-clamp-2 leading-tight w-full px-2 uppercase tracking-tight">{top3[2].name}</p>
-                  <p className="text-xl font-black text-orange-800 mt-1">{top3[2].calculatedStats.total} <span className="text-xs font-bold text-orange-800/70">pts</span></p>
-                  <div className="flex flex-col items-center gap-0.5 mt-1">
-                    <p className="text-[10px] text-orange-800/60 uppercase font-black tracking-wider">
-                      {top3[2].calculatedStats.shiftCount}/{top3[2].calculatedStats.assignedCount} turnos
-                    </p>
-                    {top3[2].calculatedStats.extraPoints !== 0 && (
-                      <p className="text-[10px] text-orange-700 font-black">
-                        {top3[2].calculatedStats.extraPoints > 0 ? `+${top3[2].calculatedStats.extraPoints}` : top3[2].calculatedStats.extraPoints} extra
+                  <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
+                    <h3 className="font-black text-orange-800 text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight">{top3[2].name}</h3>
+                    <div className="flex items-center justify-center gap-1.5 text-orange-600 font-bold text-lg">
+                      <Award size={18} />
+                      <span>{top3[2].calculatedStats.total} <span className="text-xs font-bold text-orange-400">pts</span></span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
+                      <p className="text-[10px] text-orange-800/60 uppercase font-black tracking-wider">
+                        {top3[2].calculatedStats.shiftCount}/{top3[2].calculatedStats.assignedCount} turnos
                       </p>
-                    )}
+                      {top3[2].calculatedStats.extraPoints !== 0 && (
+                        <p className="text-[10px] text-orange-700 font-black">
+                          {top3[2].calculatedStats.extraPoints > 0 ? `+${top3[2].calculatedStats.extraPoints}` : top3[2].calculatedStats.extraPoints} extra
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
           </div>
 

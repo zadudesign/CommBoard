@@ -53,10 +53,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     }
   };
 
-  // Auto-switch to list view when a volunteer is selected
+  // Auto-switch to weekly view when a volunteer is selected
   useEffect(() => {
     if (selectedVolunteerId) {
-      setViewMode('list');
+      setViewMode('weekly');
     }
   }, [selectedVolunteerId]);
 
@@ -321,27 +321,19 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     return filteredSchedule.filter(s => s.volunteerId === selectedVolunteerId).length;
   }, [filteredSchedule, selectedVolunteerId]);
 
-  const weeks = [1, 2, 3, 4];
   const currentWeek = getCurrentWeekNumber(selectedMonth, selectedYear);
   
-  const displayWeeks = useMemo(() => {
-    const baseWeeks = viewMode === 'weekly' ? [currentWeek] : weeks;
-    if (isAdmin) return baseWeeks;
-    
-    return baseWeeks.filter(week => 
-      filteredSchedule.some(s => s.week === week && (!selectedVolunteerId || s.volunteerId === selectedVolunteerId))
-    );
-  }, [viewMode, currentWeek, weeks, isAdmin, filteredSchedule, selectedVolunteerId]);
-
   const allFilteredServices = useMemo(() => {
-    if (viewMode !== 'monthly') return [];
+    if (viewMode !== 'monthly' && viewMode !== 'weekly') return [];
     
     const services: { day: string; date: Date; shifts: Shift[]; isEvent: boolean }[] = [];
-    const dayNames = Array.from(new Set(filteredSchedule.map(s => s.day)));
     
     filteredSchedule.forEach(shift => {
       if (selectedVolunteerId && shift.volunteerId !== selectedVolunteerId) return;
       
+      // Filter by week if in weekly mode
+      if (viewMode === 'weekly' && shift.week !== currentWeek) return;
+
       const date = shift.date 
         ? new Date(shift.date) 
         : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
@@ -368,7 +360,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
       return 0;
     });
-  }, [filteredSchedule, viewMode, selectedVolunteerId, selectedMonth, selectedYear]);
+  }, [filteredSchedule, viewMode, selectedVolunteerId, selectedMonth, selectedYear, currentWeek]);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
@@ -614,11 +606,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
           )}
 
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {viewMode === 'calendar' && isAdmin ? (
+            {viewMode === 'calendar' ? (
               <div className="col-span-1 xl:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6">
                 <div className="grid grid-cols-7 gap-2 mb-2">
                   {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(day => (
-                    <div key={day} className="text-center text-sm font-bold text-gray-400 uppercase tracking-wider py-2">
+                    <div key={day} className="text-center text-[10px] sm:text-sm font-bold text-gray-400 uppercase tracking-wider py-2">
                       {day}
                     </div>
                   ))}
@@ -654,6 +646,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 const roleConfig = ROLE_CONFIG[shift.role];
                                 const RoleIcon = roleConfig.icon;
                                 const shiftTime = shift.day.includes('Mañana') ? 'M' : shift.day.includes('Tarde') ? 'T' : '';
+                                const isHighlighted = selectedVolunteerId && shift.volunteerId === selectedVolunteerId;
+                                const isDimmed = selectedVolunteerId && !isHighlighted;
+
                                 return (
                                   <div 
                                     key={shift.id} 
@@ -661,7 +656,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                       "text-[10px] font-medium flex items-center gap-1 px-1.5 py-1 rounded-md border bg-white transition-all", 
                                       roleConfig.color,
                                       isAdmin && "cursor-pointer hover:shadow-sm group",
-                                      shift.eventName && "border-brand-accent/30"
+                                      shift.eventName && "border-brand-accent/30",
+                                      isHighlighted && "ring-2 ring-brand-primary border-brand-primary shadow-sm z-10",
+                                      isDimmed && "opacity-40 grayscale-[50%]"
                                     )} 
                                     title={`${shift.eventName || ''} - ${getVolunteerName(shift.volunteerId) || 'Sin asignar'}`}
                                     onClick={() => isAdmin && setEditingShiftId(shift.id)}
@@ -708,6 +705,150 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                   })}
                 </div>
               </div>
+            ) : (viewMode === 'monthly' || viewMode === 'weekly') ? (
+              <div className="col-span-1 xl:col-span-2 space-y-4">
+                {viewMode === 'weekly' && (
+                  <div className="mb-2 flex justify-between items-center">
+                    <h3 className="text-xl font-black text-brand-primary uppercase tracking-tight">Esta Semana</h3>
+                  </div>
+                )}
+                {allFilteredServices.length > 0 ? (
+                  allFilteredServices.map((service, index) => (
+                    <div 
+                      key={index} 
+                      className={clsx(
+                        "bg-white rounded-2xl border transition-all overflow-hidden shadow-sm hover:shadow-md",
+                        isToday(service.date) ? "border-brand-primary/30 bg-brand-primary/5 ring-1 ring-brand-primary/20" : "border-gray-100"
+                      )}
+                    >
+                      <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className={clsx(
+                            "p-3 rounded-xl shadow-sm border",
+                            isToday(service.date) ? "bg-brand-primary text-white border-brand-primary/20" : "bg-gray-50 text-gray-500 border-gray-100"
+                          )}>
+                            <CalendarIcon size={24} />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className={clsx("font-bold text-base capitalize", isToday(service.date) ? "text-brand-primary" : "text-gray-900")}>
+                                {formatDate(service.date)}
+                              </h4>
+                              {isToday(service.date) && (
+                                <span className="bg-brand-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Hoy
+                                </span>
+                              )}
+                              {service.isEvent && (
+                                <span className="bg-brand-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Evento
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                              {service.day}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 sm:justify-end">
+                          {service.shifts.map(shift => {
+                            const roleConfig = ROLE_CONFIG[shift.role];
+                            const RoleIcon = roleConfig.icon;
+                            const volunteerName = getVolunteerName(shift.volunteerId);
+                            const isUnfilled = !shift.volunteerId;
+                            const isHighlighted = selectedVolunteerId && shift.volunteerId === selectedVolunteerId;
+
+                            return (
+                              <div 
+                                key={shift.id} 
+                                className={clsx(
+                                  "flex flex-col gap-1 p-3 rounded-xl border bg-white min-w-[140px] transition-all",
+                                  isHighlighted ? "ring-2 ring-brand-primary border-brand-primary shadow-md" : "border-gray-100"
+                                )}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider", roleConfig.color)}>
+                                    {shift.role}
+                                  </span>
+                                  <button
+                                    onClick={() => setViewingTasksRole(shift.role)}
+                                    className="text-gray-400 hover:text-brand-primary transition-colors"
+                                  >
+                                    <Info size={12} />
+                                  </button>
+                                </div>
+                                
+                                <div className="mt-1">
+                                  {isAdmin && editingShiftId === shift.id ? (
+                                    <select
+                                      autoFocus
+                                      className="w-full text-xs font-bold text-brand-primary bg-transparent outline-none"
+                                      value={shift.volunteerId || ''}
+                                      onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
+                                      onBlur={() => setEditingShiftId(null)}
+                                    >
+                                      <option value="">Sin asignar</option>
+                                      {volunteers
+                                        .filter(v => v.roles.includes(shift.role))
+                                        .map(v => (
+                                          <option key={v.id} value={v.id}>{v.name}</option>
+                                        ))
+                                      }
+                                    </select>
+                                  ) : (
+                                    <div 
+                                      className={clsx(
+                                        "flex items-center gap-1.5",
+                                        isAdmin && "cursor-pointer hover:text-brand-primary transition-colors group"
+                                      )}
+                                      onClick={() => isAdmin && setEditingShiftId(shift.id)}
+                                    >
+                                      <span className={clsx("text-xs font-bold truncate", isUnfilled ? "text-red-500" : "text-gray-700")}>
+                                        {isUnfilled ? 'Sin asignar' : volunteerName}
+                                      </span>
+                                      {isAdmin && <Settings2 size={10} className="text-gray-300 group-hover:text-brand-primary" />}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {isAdmin && !isUnfilled && (
+                                  <div className="mt-2 pt-2 border-t border-gray-50 flex justify-center">
+                                    {shift.evaluated ? (
+                                      <div className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
+                                        <CheckCircle2 size={10} /> Evaluado
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
+                                        className="text-[10px] font-bold text-brand-accent hover:underline flex items-center gap-1"
+                                      >
+                                        <Star size={10} /> Evaluar
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-12 text-center bg-white rounded-2xl border border-gray-200 shadow-sm">
+                    <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CalendarIcon className="text-gray-400" size={28} />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No hay turnos</h3>
+                    <p className="text-gray-500">
+                      {selectedVolunteerId 
+                        ? 'No tienes turnos pendientes para el resto del mes.' 
+                        : 'No hay turnos programados para el resto del mes.'}
+                    </p>
+                  </div>
+                )}
+              </div>
             ) : viewMode === 'list' ? (
               <div className="col-span-1 xl:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="divide-y divide-gray-100">
@@ -751,7 +892,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                   </span>
                                 )}
                                 {shift.eventName && (
-                                  <span className="bg-brand-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  <span className="bg-brand-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                     Evento
                                   </span>
                                 )}
@@ -852,357 +993,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                   )}
                 </div>
               </div>
-            ) : (viewMode === 'monthly' ? allFilteredServices.length > 0 : displayWeeks.length > 0) ? (
-              viewMode === 'monthly' ? (
-                <div className="col-span-1 xl:col-span-2 space-y-4">
-                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div className="divide-y divide-gray-100">
-                      {allFilteredServices.map(service => {
-                        const isServiceToday = isToday(service.date);
-                        const dateStr = formatDate(service.date).replace(',', '');
-                        const shiftTime = service.isEvent 
-                          ? service.day 
-                          : (service.day as string).includes('Mañana') ? 'Mañana' : (service.day as string).includes('Tarde') ? 'Tarde' : '';
-
-                        return (
-                          <div key={`${service.date.getTime()}-${service.day}`} className={clsx("p-5 transition-colors hover:bg-gray-50", isServiceToday && "bg-brand-primary/5")}>
-                            <div className={clsx(
-                              "flex items-center justify-between mb-4 p-3 rounded-xl border",
-                              isServiceToday 
-                                ? "bg-brand-primary/10 border-brand-primary/20 shadow-sm" 
-                                : "bg-gray-50 border-gray-200"
-                            )}>
-                              <div className="flex items-center gap-3">
-                                <div className={clsx(
-                                  "p-2 rounded-lg",
-                                  isServiceToday ? "bg-brand-primary text-white shadow-sm" : "bg-white text-gray-500 shadow-sm border border-gray-100"
-                                )}>
-                                  <CalendarIcon size={20} />
-                                </div>
-                                <div className="flex flex-col">
-                                  <h4 className={clsx(
-                                    "font-bold text-base capitalize",
-                                    isServiceToday ? "text-brand-primary" : "text-gray-900"
-                                  )}>
-                                    {dateStr}
-                                  </h4>
-                                  {shiftTime && (
-                                    <span className={clsx(
-                                      "text-xs font-bold uppercase tracking-wider mt-0.5",
-                                      service.isEvent ? "text-brand-accent" : "text-gray-500"
-                                    )}>
-                                      {service.isEvent ? `Evento: ${shiftTime}` : shiftTime}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                              {isServiceToday && (
-                                <span className="bg-brand-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                  Hoy
-                                </span>
-                              )}
-                              {service.isEvent && !isServiceToday && (
-                                <span className="bg-brand-accent text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                  Evento
-                                </span>
-                              )}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {[...service.shifts].sort((a, b) => a.role.localeCompare(b.role)).map(shift => {
-                                const volunteerName = getVolunteerName(shift.volunteerId);
-                                const isUnfilled = !shift.volunteerId;
-                                const isEvaluated = shift.evaluated;
-                                const isHighlighted = selectedVolunteerId && shift.volunteerId === selectedVolunteerId;
-                                const isDimmed = selectedVolunteerId && !isHighlighted;
-                                const roleConfig = ROLE_CONFIG[shift.role];
-                                const RoleIcon = roleConfig.icon;
-                                
-                                return (
-                                  <div 
-                                    key={shift.id} 
-                                    className={twMerge(
-                                      clsx(
-                                        "flex flex-col p-3 rounded-xl border transition-all duration-300",
-                                        isHighlighted 
-                                          ? "bg-brand-primary/10 border-brand-primary ring-2 ring-brand-primary shadow-md transform scale-[1.02] z-10" 
-                                          : isUnfilled 
-                                            ? "bg-red-50 border-red-100" 
-                                            : "bg-gray-50 border-gray-100",
-                                        isDimmed && "opacity-40 grayscale-[50%]"
-                                      )
-                                    )}
-                                  >
-                                    <span className={twMerge(
-                                      clsx(
-                                        "text-xs font-medium mb-1 flex items-center gap-1",
-                                        isHighlighted ? "text-brand-primary" : roleConfig.color
-                                      )
-                                    )}>
-                                      <RoleIcon size={12} />
-                                      {shift.role}
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setViewingTasksRole(shift.role);
-                                        }}
-                                        className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
-                                        title="Ver tareas"
-                                      >
-                                        <Info size={14} />
-                                      </button>
-                                    </span>
-                                    <span className={twMerge(
-                                      clsx(
-                                        "font-medium text-sm",
-                                        isHighlighted ? "text-brand-secondary font-bold" :
-                                        isUnfilled ? "text-red-600 flex items-center gap-1" : "text-gray-900"
-                                      )
-                                    )}>
-                                      {isUnfilled && <AlertCircle size={14} />}
-                                      {isAdmin && editingShiftId === shift.id ? (
-                                        <select
-                                          autoFocus
-                                          className="text-sm font-bold text-brand-primary bg-white border border-brand-primary/30 rounded-lg px-1 py-0.5 outline-none shadow-sm w-full"
-                                          value={shift.volunteerId || ''}
-                                          onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
-                                          onBlur={() => setEditingShiftId(null)}
-                                        >
-                                          <option value="">Sin asignar</option>
-                                          {volunteers
-                                            .filter(v => v.roles.includes(shift.role))
-                                            .map(v => (
-                                              <option key={v.id} value={v.id}>{v.name}</option>
-                                            ))
-                                          }
-                                        </select>
-                                      ) : (
-                                        <div 
-                                          className={clsx(
-                                            "flex items-center gap-1.5",
-                                            isAdmin && "cursor-pointer hover:bg-white/50 px-1 rounded transition-colors group"
-                                          )}
-                                          onClick={() => isAdmin && setEditingShiftId(shift.id)}
-                                        >
-                                          <span className="truncate">{isUnfilled ? 'Sin asignar' : volunteerName}</span>
-                                          {isAdmin && <Settings2 size={10} className="text-gray-400 group-hover:text-brand-primary transition-colors shrink-0" />}
-                                        </div>
-                                      )}
-                                    </span>
-                                    
-                                    {isAdmin && !isUnfilled && !isEvaluated && (
-                                      <button
-                                        onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
-                                        className="mt-2 text-xs font-medium text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 py-1 px-2 rounded-md flex items-center justify-center gap-1 transition-colors"
-                                      >
-                                        <Star size={12} /> Evaluar
-                                      </button>
-                                    )}
-                                    {isAdmin && !isUnfilled && isEvaluated && (
-                                      <div className="mt-2 text-xs font-medium text-emerald-600 bg-emerald-50 py-1 px-2 rounded-md flex items-center justify-center gap-1">
-                                        <CheckCircle2 size={12} /> Evaluado
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                displayWeeks.map(week => (
-                <div key={week} className={clsx("bg-white rounded-2xl border shadow-sm overflow-hidden", viewMode === 'weekly' ? "border-brand-primary/30 shadow-md" : "border-gray-200")}>
-                  <div className="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
-                    <h3 className="font-bold text-gray-900">
-                      {viewMode === 'weekly' ? 'Esta Semana' : `Semana ${week}`}
-                    </h3>
-                  </div>
-                  
-                  <div className="divide-y divide-gray-100">
-                    {(() => {
-                      const weekShifts = filteredSchedule.filter(s => s.week === week);
-                      const uniqueServiceDays = Array.from(new Set(weekShifts.map(s => s.day)));
-                      const weekServices = uniqueServiceDays.map(dayName => {
-                        const shifts = weekShifts.filter(s => s.day === dayName);
-                        const firstShift = shifts[0];
-                        const date = firstShift.date 
-                          ? new Date(firstShift.date) 
-                          : getServiceDate(week, dayName as any, selectedMonth, selectedYear);
-                        return { 
-                          day: dayName, 
-                          date, 
-                          shifts,
-                          isEvent: !!firstShift.eventName 
-                        };
-                      }).sort((a, b) => {
-                        const dateDiff = a.date.getTime() - b.date.getTime();
-                        if (dateDiff !== 0) return dateDiff;
-                        if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
-                        if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
-                        return 0;
-                      });
-
-                        return weekServices.map(service => {
-                          const isServiceToday = isToday(service.date);
-                          const dateStr = formatDate(service.date).replace(',', '');
-                          const shiftTime = service.isEvent 
-                            ? service.day 
-                            : (service.day as string).includes('Mañana') ? 'Mañana' : (service.day as string).includes('Tarde') ? 'Tarde' : '';
-
-                          return (
-                            <div key={service.day} className={clsx("p-5 transition-colors border-b border-gray-100 last:border-0", isServiceToday && "bg-brand-primary/5")}>
-                              <div className={clsx(
-                                "flex items-center justify-between mb-4 p-3 rounded-xl border",
-                                isServiceToday 
-                                  ? "bg-brand-primary/10 border-brand-primary/20 shadow-sm" 
-                                  : "bg-gray-50 border-gray-200"
-                              )}>
-                                <div className="flex items-center gap-3">
-                                  <div className={clsx(
-                                    "p-2 rounded-lg",
-                                    isServiceToday ? "bg-brand-primary text-white shadow-sm" : "bg-white text-gray-500 shadow-sm border border-gray-100"
-                                  )}>
-                                    <CalendarIcon size={20} />
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <h4 className={clsx(
-                                      "font-bold text-base capitalize",
-                                      isServiceToday ? "text-brand-primary" : "text-gray-900"
-                                    )}>
-                                      {dateStr}
-                                    </h4>
-                                    {shiftTime && (
-                                      <span className={clsx(
-                                        "text-xs font-bold uppercase tracking-wider mt-0.5",
-                                        service.isEvent ? "text-brand-accent" : "text-gray-500"
-                                      )}>
-                                        {service.isEvent ? `Evento: ${shiftTime}` : shiftTime}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              {isServiceToday && (
-                                <span className="bg-brand-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                  Hoy
-                                </span>
-                              )}
-                              {service.isEvent && !isServiceToday && (
-                                <span className="bg-brand-accent text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                                  Evento
-                                </span>
-                              )}
-                            </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {[...service.shifts].sort((a, b) => a.role.localeCompare(b.role)).map(shift => {
-                              const volunteerName = getVolunteerName(shift.volunteerId);
-                              const isUnfilled = !shift.volunteerId;
-                              const isEvaluated = shift.evaluated;
-                              const isHighlighted = selectedVolunteerId && shift.volunteerId === selectedVolunteerId;
-                              const isDimmed = selectedVolunteerId && !isHighlighted;
-                              const roleConfig = ROLE_CONFIG[shift.role];
-                              const RoleIcon = roleConfig.icon;
-                              
-                              return (
-                                <div 
-                                  key={shift.id} 
-                                  className={twMerge(
-                                    clsx(
-                                      "flex flex-col p-3 rounded-xl border transition-all duration-300",
-                                      isHighlighted 
-                                        ? "bg-brand-primary/10 border-brand-primary ring-2 ring-brand-primary shadow-md transform scale-[1.02] z-10" 
-                                        : isUnfilled 
-                                          ? "bg-red-50 border-red-100" 
-                                          : "bg-gray-50 border-gray-100",
-                                      isDimmed && "opacity-40 grayscale-[50%]"
-                                    )
-                                  )}
-                                >
-                                  <span className={twMerge(
-                                    clsx(
-                                      "text-xs font-medium mb-1 flex items-center gap-1",
-                                      isHighlighted ? "text-brand-primary" : roleConfig.color
-                                    )
-                                  )}>
-                                    <RoleIcon size={12} />
-                                    {shift.role}
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setViewingTasksRole(shift.role);
-                                      }}
-                                      className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
-                                      title="Ver tareas"
-                                    >
-                                      <Info size={14} />
-                                    </button>
-                                  </span>
-                                  <span className={twMerge(
-                                    clsx(
-                                      "font-medium text-sm",
-                                      isHighlighted ? "text-brand-secondary font-bold" :
-                                      isUnfilled ? "text-red-600 flex items-center gap-1" : "text-gray-900"
-                                    )
-                                  )}>
-                                    {isUnfilled && <AlertCircle size={14} />}
-                                    {isAdmin && editingShiftId === shift.id ? (
-                                      <select
-                                        autoFocus
-                                        className="text-sm font-bold text-brand-primary bg-white border border-brand-primary/30 rounded-lg px-1 py-0.5 outline-none shadow-sm w-full"
-                                        value={shift.volunteerId || ''}
-                                        onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
-                                        onBlur={() => setEditingShiftId(null)}
-                                      >
-                                        <option value="">Sin asignar</option>
-                                        {volunteers
-                                          .filter(v => v.roles.includes(shift.role))
-                                          .map(v => (
-                                            <option key={v.id} value={v.id}>{v.name}</option>
-                                          ))
-                                        }
-                                      </select>
-                                    ) : (
-                                      <div 
-                                        className={clsx(
-                                          "flex items-center gap-1.5",
-                                          isAdmin && "cursor-pointer hover:bg-white/50 px-1 rounded transition-colors group"
-                                        )}
-                                        onClick={() => isAdmin && setEditingShiftId(shift.id)}
-                                      >
-                                        <span className="truncate">{isUnfilled ? 'Sin asignar' : volunteerName}</span>
-                                        {isAdmin && <Settings2 size={10} className="text-gray-400 group-hover:text-brand-primary transition-colors shrink-0" />}
-                                      </div>
-                                    )}
-                                  </span>
-                                  
-                                  {isAdmin && !isUnfilled && !isEvaluated && (
-                                    <button
-                                      onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
-                                      className="mt-2 text-xs font-medium text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 py-1 px-2 rounded-md flex items-center justify-center gap-1 transition-colors"
-                                    >
-                                      <Star size={12} /> Evaluar
-                                    </button>
-                                  )}
-                                  {isAdmin && !isUnfilled && isEvaluated && (
-                                    <div className="mt-2 text-xs font-medium text-emerald-600 bg-emerald-50 py-1 px-2 rounded-md flex items-center justify-center gap-1">
-                                      <CheckCircle2 size={12} /> Evaluado
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
-                  </div>
-                </div>
-              ))
-            )
-          ) : (
+            ) : (
               <div className="col-span-1 xl:col-span-2 p-12 text-center bg-white rounded-2xl border border-gray-200 shadow-sm">
                 <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CalendarIcon className="text-gray-400" size={28} />
