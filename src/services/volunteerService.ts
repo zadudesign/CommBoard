@@ -62,7 +62,6 @@ class SupabaseVolunteerService implements IVolunteerService {
     if (volunteer.roles !== undefined) updateData.roles = volunteer.roles;
     if (volunteer.days !== undefined) updateData.days = volunteer.days;
     if (volunteer.restrictedDates !== undefined) updateData.restricted_dates = volunteer.restrictedDates;
-    if (volunteer.active !== undefined) updateData.active = volunteer.active;
     
     if (volunteer.active !== undefined || volunteer.stats !== undefined) {
       // Fetch current stats to merge properly
