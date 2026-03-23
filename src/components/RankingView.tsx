@@ -134,8 +134,20 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       .sort((a, b) => (b.calculatedStats?.total || 0) - (a.calculatedStats?.total || 0));
   }, [schedule, volunteers, selectedMonth, selectedYear]);
 
-  const top3 = rankedVolunteers.slice(0, 3);
-  const rest = rankedVolunteers.slice(3);
+  const uniqueScores = useMemo(() => {
+    const scores = rankedVolunteers.map(v => v.calculatedStats?.total || 0);
+    return [...new Set(scores)].sort((a, b) => b - a);
+  }, [rankedVolunteers]);
+
+  const top3Groups = useMemo(() => {
+    const topScores = uniqueScores.slice(0, 3);
+    return topScores.map(score => rankedVolunteers.filter(v => v.calculatedStats?.total === score));
+  }, [uniqueScores, rankedVolunteers]);
+
+  const rest = useMemo(() => {
+    const topScores = uniqueScores.slice(0, 3);
+    return rankedVolunteers.filter(v => !topScores.includes(v.calculatedStats?.total || 0));
+  }, [uniqueScores, rankedVolunteers]);
 
   const globalAverage = useMemo(() => {
     if (rankedVolunteers.length === 0) return 0;
@@ -397,150 +409,153 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
             
             <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-6 sm:gap-10 mt-12 mb-2 relative z-10">
               {/* 2nd Place (Silver) */}
-              {top3[1] && (
-                <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
-                  <div className="relative mb-6 group">
-                    <div className="absolute -inset-1 bg-slate-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-slate-100 overflow-hidden bg-white shadow-lg ring-4 ring-slate-50">
-                      {top3[1].photoUrl ? (
-                        <img src={top3[1].photoUrl} alt={top3[1].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      ) : (
-                        <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
-                          <User size={48} />
+              {top3Groups[1] && top3Groups[1].length > 0 && (
+                <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[280px]">
+                  <div className="relative mb-6 flex justify-center flex-wrap gap-2 px-4">
+                    {top3Groups[1].map((v, idx) => (
+                      <div key={v.id} className={clsx(
+                        "relative group transition-all duration-300 hover:z-20",
+                        top3Groups[1].length > 1 ? "-ml-4 first:ml-0" : ""
+                      )}>
+                        <div className="absolute -inset-1 bg-slate-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-slate-100 overflow-hidden bg-white shadow-lg ring-4 ring-slate-50">
+                          {v.photoUrl ? (
+                            <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-300">
+                              <User size={40} />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 bg-slate-400 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg">
+                      </div>
+                    ))}
+                    <div className="absolute -bottom-2 -right-2 bg-slate-400 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg z-30">
                       2
                     </div>
                   </div>
                   <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
-                    <h3 className={clsx(
-                      "font-black text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight transition-colors",
-                      top3[1].calculatedStats.total < 31 ? "text-red-600" : "text-slate-800"
-                    )}>{top3[1].name}</h3>
+                    <div className="flex flex-col gap-1 mb-2">
+                      {top3Groups[1].map(v => (
+                        <h3 key={v.id} className={clsx(
+                          "font-black text-sm sm:text-base leading-tight truncate px-2 uppercase tracking-tight transition-colors",
+                          v.calculatedStats.total < 31 ? "text-red-600" : "text-slate-800"
+                        )}>{v.name}</h3>
+                      ))}
+                    </div>
                     <div className={clsx(
-                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all",
-                      top3[1].calculatedStats.total < 31 
+                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all mx-auto w-fit",
+                      top3Groups[1][0].calculatedStats.total < 31 
                         ? "bg-red-50 text-red-600 border border-red-100" 
                         : "text-slate-500"
                     )}>
                       <Award size={18} />
-                      <span>{top3[1].calculatedStats.total} <span className={clsx(
+                      <span>{top3Groups[1][0].calculatedStats.total} <span className={clsx(
                         "text-xs font-bold",
-                        top3[1].calculatedStats.total < 31 ? "text-red-400" : "text-slate-400"
+                        top3Groups[1][0].calculatedStats.total < 31 ? "text-red-400" : "text-slate-400"
                       )}>pts</span></span>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
-                      <p className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
-                        {top3[1].calculatedStats.shiftCount}/{top3[1].calculatedStats.assignedCount} turnos
-                      </p>
-                      {top3[1].calculatedStats.extraPoints !== 0 && (
-                        <p className="text-[10px] text-emerald-600 font-black">
-                          {top3[1].calculatedStats.extraPoints > 0 ? `+${top3[1].calculatedStats.extraPoints}` : top3[1].calculatedStats.extraPoints} extra
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
               )}
 
               {/* 1st Place (Gold) */}
-              {top3[0] && (
-                <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[240px] z-10 -translate-y-4 sm:-translate-y-8">
-                  <div className="relative mb-8 group">
-                    <div className="absolute -inset-2 bg-amber-400 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-8 border-amber-100 overflow-hidden bg-white shadow-2xl ring-8 ring-amber-50">
-                      {top3[0].photoUrl ? (
-                        <img src={top3[0].photoUrl} alt={top3[0].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      ) : (
-                        <div className="w-full h-full bg-amber-50 flex items-center justify-center text-amber-300">
-                          <User size={64} />
+              {top3Groups[0] && top3Groups[0].length > 0 && (
+                <div className="flex flex-col items-center order-1 sm:order-2 w-full sm:w-1/3 max-w-[320px] z-10 -translate-y-4 sm:-translate-y-8">
+                  <div className="relative mb-8 flex justify-center flex-wrap gap-2 px-4">
+                    {top3Groups[0].map((v, idx) => (
+                      <div key={v.id} className={clsx(
+                        "relative group transition-all duration-300 hover:z-20",
+                        top3Groups[0].length > 1 ? "-ml-6 first:ml-0" : ""
+                      )}>
+                        <div className="absolute -inset-2 bg-amber-400 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                        <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-8 border-amber-100 overflow-hidden bg-white shadow-2xl ring-8 ring-amber-50">
+                          {v.photoUrl ? (
+                            <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <div className="w-full h-full bg-amber-50 flex items-center justify-center text-amber-300">
+                              <User size={56} />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-amber-500 animate-bounce drop-shadow-md">
+                      </div>
+                    ))}
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-amber-500 animate-bounce drop-shadow-md z-30">
                       <Trophy size={48} fill="currentColor" />
                     </div>
-                    <div className="absolute -bottom-3 -right-3 bg-amber-500 text-white w-14 h-14 rounded-full flex items-center justify-center border-4 border-white shadow-xl font-black text-2xl">
+                    <div className="absolute -bottom-3 -right-3 bg-amber-500 text-white w-14 h-14 rounded-full flex items-center justify-center border-4 border-white shadow-xl font-black text-2xl z-30">
                       1
                     </div>
                   </div>
                   <div className="text-center bg-white p-7 rounded-3xl border-2 border-amber-100 w-full shadow-xl ring-4 ring-amber-50/30 transform hover:-translate-y-2 transition-all">
-                    <h3 className={clsx(
-                      "font-black text-xl leading-tight mb-1 truncate px-2 uppercase tracking-tighter transition-colors",
-                      top3[0].calculatedStats.total < 31 ? "text-red-600" : "text-amber-900"
-                    )}>{top3[0].name}</h3>
+                    <div className="flex flex-col gap-1 mb-3">
+                      {top3Groups[0].map(v => (
+                        <h3 key={v.id} className={clsx(
+                          "font-black text-base sm:text-lg leading-tight truncate px-2 uppercase tracking-tighter transition-colors",
+                          v.calculatedStats.total < 31 ? "text-red-600" : "text-amber-900"
+                        )}>{v.name}</h3>
+                      ))}
+                    </div>
                     <div className={clsx(
-                      "flex items-center justify-center gap-2 font-black text-2xl px-4 py-1.5 rounded-full transition-all",
-                      top3[0].calculatedStats.total < 31 
+                      "flex items-center justify-center gap-2 font-black text-2xl px-4 py-1.5 rounded-full transition-all mx-auto w-fit",
+                      top3Groups[0][0].calculatedStats.total < 31 
                         ? "bg-red-50 text-red-600 border border-red-100" 
                         : "text-amber-600"
                     )}>
                       <Medal size={24} />
-                      <span>{top3[0].calculatedStats.total} <span className={clsx(
+                      <span>{top3Groups[0][0].calculatedStats.total} <span className={clsx(
                         "text-sm font-bold",
-                        top3[0].calculatedStats.total < 31 ? "text-red-400" : "text-amber-500/70"
+                        top3Groups[0][0].calculatedStats.total < 31 ? "text-red-400" : "text-amber-500/70"
                       )}>pts</span></span>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-amber-50 flex flex-col items-center gap-0.5">
-                      <p className="text-xs text-amber-700/80 uppercase font-black tracking-wider">
-                        {top3[0].calculatedStats.shiftCount}/{top3[0].calculatedStats.assignedCount} turnos
-                      </p>
-                      {top3[0].calculatedStats.extraPoints !== 0 && (
-                        <p className="text-[10px] text-amber-600 font-black">
-                          {top3[0].calculatedStats.extraPoints > 0 ? `+${top3[0].calculatedStats.extraPoints}` : top3[0].calculatedStats.extraPoints} extra
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
               )}
 
               {/* 3rd Place (Bronze) */}
-              {top3[2] && (
-                <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[200px]">
-                  <div className="relative mb-6 group">
-                    <div className="absolute -inset-1 bg-orange-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-orange-100 overflow-hidden bg-white shadow-lg ring-4 ring-orange-50">
-                      {top3[2].photoUrl ? (
-                        <img src={top3[2].photoUrl} alt={top3[2].name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      ) : (
-                        <div className="w-full h-full bg-orange-50 flex items-center justify-center text-orange-300">
-                          <User size={48} />
+              {top3Groups[2] && top3Groups[2].length > 0 && (
+                <div className="flex flex-col items-center order-3 sm:order-3 w-full sm:w-1/3 max-w-[280px]">
+                  <div className="relative mb-6 flex justify-center flex-wrap gap-2 px-4">
+                    {top3Groups[2].map((v, idx) => (
+                      <div key={v.id} className={clsx(
+                        "relative group transition-all duration-300 hover:z-20",
+                        top3Groups[2].length > 1 ? "-ml-4 first:ml-0" : ""
+                      )}>
+                        <div className="absolute -inset-1 bg-orange-200 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-orange-100 overflow-hidden bg-white shadow-lg ring-4 ring-orange-50">
+                          {v.photoUrl ? (
+                            <img src={v.photoUrl} alt={v.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                          ) : (
+                            <div className="w-full h-full bg-orange-50 flex items-center justify-center text-orange-300">
+                              <User size={40} />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg">
+                      </div>
+                    ))}
+                    <div className="absolute -bottom-2 -right-2 bg-orange-600 text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-lg font-black text-lg z-30">
                       3
                     </div>
                   </div>
                   <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
-                    <h3 className={clsx(
-                      "font-black text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight transition-colors",
-                      top3[2].calculatedStats.total < 31 ? "text-red-600" : "text-orange-800"
-                    )}>{top3[2].name}</h3>
+                    <div className="flex flex-col gap-1 mb-2">
+                      {top3Groups[2].map(v => (
+                        <h3 key={v.id} className={clsx(
+                          "font-black text-sm sm:text-base leading-tight truncate px-2 uppercase tracking-tight transition-colors",
+                          v.calculatedStats.total < 31 ? "text-red-600" : "text-orange-800"
+                        )}>{v.name}</h3>
+                      ))}
+                    </div>
                     <div className={clsx(
-                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all",
-                      top3[2].calculatedStats.total < 31 
+                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all mx-auto w-fit",
+                      top3Groups[2][0].calculatedStats.total < 31 
                         ? "bg-red-50 text-red-600 border border-red-100" 
                         : "text-orange-600"
                     )}>
                       <Award size={18} />
-                      <span>{top3[2].calculatedStats.total} <span className={clsx(
+                      <span>{top3Groups[2][0].calculatedStats.total} <span className={clsx(
                         "text-xs font-bold",
-                        top3[2].calculatedStats.total < 31 ? "text-red-400" : "text-orange-400"
+                        top3Groups[2][0].calculatedStats.total < 31 ? "text-red-400" : "text-orange-400"
                       )}>pts</span></span>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
-                      <p className="text-[10px] text-orange-800/60 uppercase font-black tracking-wider">
-                        {top3[2].calculatedStats.shiftCount}/{top3[2].calculatedStats.assignedCount} turnos
-                      </p>
-                      {top3[2].calculatedStats.extraPoints !== 0 && (
-                        <p className="text-[10px] text-orange-700 font-black">
-                          {top3[2].calculatedStats.extraPoints > 0 ? `+${top3[2].calculatedStats.extraPoints}` : top3[2].calculatedStats.extraPoints} extra
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
