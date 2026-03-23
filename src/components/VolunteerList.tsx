@@ -209,7 +209,7 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
                       )}
                     </div>
                     <div>
-                      <h3 className="font-black text-lg text-brand-primary leading-tight tracking-tight">{v.name}</h3>
+                      <h3 className="font-black text-lg text-brand-primary leading-tight tracking-tight capitalize">{v.name}</h3>
                       <div className="flex flex-wrap gap-2 mt-1.5">
                         <div className="flex items-center gap-1 text-[10px] font-black text-white bg-brand-secondary px-2 py-0.5 rounded-lg uppercase tracking-wider shadow-sm">
                           <CalendarCheck2 size={10} />

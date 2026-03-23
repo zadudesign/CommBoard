@@ -477,7 +477,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
               <select
                 value={selectedVolunteerId || ''}
                 onChange={(e) => onSelectVolunteer(e.target.value || null)}
-                className="text-xs font-black text-brand-primary bg-transparent outline-none cursor-pointer uppercase tracking-wider"
+                className="text-xs font-black text-brand-primary bg-transparent outline-none cursor-pointer capitalize tracking-wider"
               >
                 <option value="">Ver todos los turnos</option>
                 {volunteers.map(v => (
@@ -593,7 +593,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                 )}
               </div>
               <div>
-                <h3 className="text-3xl font-black text-brand-primary uppercase tracking-tight">{selectedVolunteer.name}</h3>
+                <h3 className="text-3xl font-black text-brand-primary capitalize tracking-tight">{selectedVolunteer.name}</h3>
                 <p className="text-brand-secondary font-bold mt-1 uppercase tracking-widest text-xs">
                   Mostrando turnos asignados para {getMonthName(selectedMonth, selectedYear)}
                 </p>
@@ -805,7 +805,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                       )}
                                       onClick={() => isAdmin && setEditingShiftId(shift.id)}
                                     >
-                                      <span className={clsx("text-xs font-bold truncate", isUnfilled ? "text-red-500" : "text-gray-700")}>
+                                      <span className={clsx("text-xs font-bold truncate capitalize", isUnfilled ? "text-red-500" : "text-gray-700")}>
                                         {isUnfilled ? 'Sin asignar' : volunteerName}
                                       </span>
                                       {isAdmin && <Settings2 size={10} className="text-gray-300 group-hover:text-brand-primary" />}
@@ -932,7 +932,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 {isAdmin && editingShiftId === shift.id ? (
                                   <select
                                     autoFocus
-                                    className="text-sm font-bold text-brand-primary bg-white border border-brand-primary/30 rounded-lg px-2 py-1 outline-none shadow-sm"
+                                    className="text-sm font-bold text-brand-primary bg-white border border-brand-primary/30 rounded-lg px-2 py-1 outline-none shadow-sm capitalize"
                                     value={shift.volunteerId || ''}
                                     onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
                                     onBlur={() => setEditingShiftId(null)}
@@ -953,7 +953,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     )}
                                     onClick={() => isAdmin && setEditingShiftId(shift.id)}
                                   >
-                                    <span className={clsx("text-sm font-medium", isUnfilled ? "text-red-600" : "text-gray-700")}>
+                                    <span className={clsx("text-sm font-medium capitalize", isUnfilled ? "text-red-600" : "text-gray-700")}>
                                       {isUnfilled ? 'Sin asignar' : volunteerName}
                                     </span>
                                     {isAdmin && <Settings2 size={12} className="text-gray-300 group-hover:text-brand-primary transition-colors" />}

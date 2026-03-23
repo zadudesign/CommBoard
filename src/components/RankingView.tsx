@@ -136,7 +136,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
 
   const uniqueScores = useMemo(() => {
     const scores = rankedVolunteers.map(v => v.calculatedStats?.total || 0);
-    return [...new Set(scores)].sort((a, b) => b - a);
+    return Array.from(new Set(scores)).sort((a: number, b: number) => b - a);
   }, [rankedVolunteers]);
 
   const top3Groups = useMemo(() => {
@@ -286,7 +286,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                   <select
                     value={selectedHistoryVolunteerId}
                     onChange={(e) => setSelectedHistoryVolunteerId(e.target.value)}
-                    className="text-sm border-none bg-transparent focus:ring-0 text-gray-700 font-medium cursor-pointer outline-none"
+                    className="text-sm border-none bg-transparent focus:ring-0 text-gray-700 font-medium cursor-pointer outline-none capitalize"
                   >
                     <option value="">Todos los voluntarios</option>
                     {historyVolunteers.map(v => (
@@ -437,7 +437,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     <div className="flex flex-col gap-1 mb-2">
                       {top3Groups[1].map(v => (
                         <h3 key={v.id} className={clsx(
-                          "font-black text-sm sm:text-base leading-tight truncate px-2 uppercase tracking-tight transition-colors",
+                          "font-black text-sm sm:text-base leading-tight truncate px-2 capitalize tracking-tight transition-colors",
                           v.calculatedStats.total < 31 ? "text-red-600" : "text-slate-800"
                         )}>{v.name}</h3>
                       ))}
@@ -490,7 +490,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     <div className="flex flex-col gap-1 mb-3">
                       {top3Groups[0].map(v => (
                         <h3 key={v.id} className={clsx(
-                          "font-black text-base sm:text-lg leading-tight truncate px-2 uppercase tracking-tighter transition-colors",
+                          "font-black text-base sm:text-lg leading-tight truncate px-2 capitalize tracking-tighter transition-colors",
                           v.calculatedStats.total < 31 ? "text-red-600" : "text-amber-900"
                         )}>{v.name}</h3>
                       ))}
@@ -540,7 +540,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     <div className="flex flex-col gap-1 mb-2">
                       {top3Groups[2].map(v => (
                         <h3 key={v.id} className={clsx(
-                          "font-black text-sm sm:text-base leading-tight truncate px-2 uppercase tracking-tight transition-colors",
+                          "font-black text-sm sm:text-base leading-tight truncate px-2 capitalize tracking-tight transition-colors",
                           v.calculatedStats.total < 31 ? "text-red-600" : "text-orange-800"
                         )}>{v.name}</h3>
                       ))}
@@ -581,7 +581,7 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                         )}
                       </div>
                       <p className={clsx(
-                        "font-semibold transition-colors",
+                        "font-semibold transition-colors capitalize",
                         volunteer.calculatedStats.total < 31 ? "text-red-600" : "text-gray-900"
                       )}>{volunteer.name}</p>
                     </div>

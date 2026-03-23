@@ -59,7 +59,7 @@ export function EvaluationModal({ volunteerName, onClose, onSubmit }: Evaluation
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="text-center mb-2 bg-brand-light/10 p-4 rounded-2xl border border-brand-light/20">
             <p className="text-[10px] font-black text-brand-secondary uppercase tracking-widest mb-1">Voluntario</p>
-            <p className="font-black text-brand-primary text-xl uppercase tracking-tight">{volunteerName}</p>
+            <p className="font-black text-brand-primary text-xl capitalize tracking-tight">{volunteerName}</p>
           </div>
 
           <div className="space-y-8">
