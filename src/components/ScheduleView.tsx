@@ -768,7 +768,8 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 )}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider", roleConfig.color)}>
+                                  <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1", roleConfig.color)}>
+                                    <RoleIcon size={10} />
                                     {shift.role}
                                   </span>
                                   <button
