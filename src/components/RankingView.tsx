@@ -415,10 +415,21 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     </div>
                   </div>
                   <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
-                    <h3 className="font-black text-slate-800 text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight">{top3[1].name}</h3>
-                    <div className="flex items-center justify-center gap-1.5 text-slate-500 font-bold text-lg">
+                    <h3 className={clsx(
+                      "font-black text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight transition-colors",
+                      top3[1].calculatedStats.total < 31 ? "text-red-600" : "text-slate-800"
+                    )}>{top3[1].name}</h3>
+                    <div className={clsx(
+                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all",
+                      top3[1].calculatedStats.total < 31 
+                        ? "bg-red-50 text-red-600 border border-red-100" 
+                        : "text-slate-500"
+                    )}>
                       <Award size={18} />
-                      <span>{top3[1].calculatedStats.total} <span className="text-xs font-bold text-slate-400">pts</span></span>
+                      <span>{top3[1].calculatedStats.total} <span className={clsx(
+                        "text-xs font-bold",
+                        top3[1].calculatedStats.total < 31 ? "text-red-400" : "text-slate-400"
+                      )}>pts</span></span>
                     </div>
                     <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
                       <p className="text-[10px] text-slate-400 uppercase font-black tracking-wider">
@@ -456,10 +467,21 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     </div>
                   </div>
                   <div className="text-center bg-white p-7 rounded-3xl border-2 border-amber-100 w-full shadow-xl ring-4 ring-amber-50/30 transform hover:-translate-y-2 transition-all">
-                    <h3 className="font-black text-amber-900 text-xl leading-tight mb-1 truncate px-2 uppercase tracking-tighter">{top3[0].name}</h3>
-                    <div className="flex items-center justify-center gap-2 text-amber-600 font-black text-2xl">
+                    <h3 className={clsx(
+                      "font-black text-xl leading-tight mb-1 truncate px-2 uppercase tracking-tighter transition-colors",
+                      top3[0].calculatedStats.total < 31 ? "text-red-600" : "text-amber-900"
+                    )}>{top3[0].name}</h3>
+                    <div className={clsx(
+                      "flex items-center justify-center gap-2 font-black text-2xl px-4 py-1.5 rounded-full transition-all",
+                      top3[0].calculatedStats.total < 31 
+                        ? "bg-red-50 text-red-600 border border-red-100" 
+                        : "text-amber-600"
+                    )}>
                       <Medal size={24} />
-                      <span>{top3[0].calculatedStats.total} <span className="text-sm font-bold text-amber-500/70">pts</span></span>
+                      <span>{top3[0].calculatedStats.total} <span className={clsx(
+                        "text-sm font-bold",
+                        top3[0].calculatedStats.total < 31 ? "text-red-400" : "text-amber-500/70"
+                      )}>pts</span></span>
                     </div>
                     <div className="mt-3 pt-3 border-t border-amber-50 flex flex-col items-center gap-0.5">
                       <p className="text-xs text-amber-700/80 uppercase font-black tracking-wider">
@@ -494,10 +516,21 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                     </div>
                   </div>
                   <div className="text-center bg-white p-5 rounded-2xl border border-gray-100 w-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
-                    <h3 className="font-black text-orange-800 text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight">{top3[2].name}</h3>
-                    <div className="flex items-center justify-center gap-1.5 text-orange-600 font-bold text-lg">
+                    <h3 className={clsx(
+                      "font-black text-lg leading-tight mb-1 truncate px-2 uppercase tracking-tight transition-colors",
+                      top3[2].calculatedStats.total < 31 ? "text-red-600" : "text-orange-800"
+                    )}>{top3[2].name}</h3>
+                    <div className={clsx(
+                      "flex items-center justify-center gap-1.5 font-bold text-lg px-3 py-1 rounded-full transition-all",
+                      top3[2].calculatedStats.total < 31 
+                        ? "bg-red-50 text-red-600 border border-red-100" 
+                        : "text-orange-600"
+                    )}>
                       <Award size={18} />
-                      <span>{top3[2].calculatedStats.total} <span className="text-xs font-bold text-orange-400">pts</span></span>
+                      <span>{top3[2].calculatedStats.total} <span className={clsx(
+                        "text-xs font-bold",
+                        top3[2].calculatedStats.total < 31 ? "text-red-400" : "text-orange-400"
+                      )}>pts</span></span>
                     </div>
                     <div className="mt-2 pt-2 border-t border-gray-50 flex flex-col items-center gap-0.5">
                       <p className="text-[10px] text-orange-800/60 uppercase font-black tracking-wider">
@@ -532,7 +565,10 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                           <span className="text-2xl">{volunteer.name.charAt(0)}</span>
                         )}
                       </div>
-                      <p className="font-semibold text-gray-900">{volunteer.name}</p>
+                      <p className={clsx(
+                        "font-semibold transition-colors",
+                        volunteer.calculatedStats.total < 31 ? "text-red-600" : "text-gray-900"
+                      )}>{volunteer.name}</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <div className="text-right mr-2 hidden sm:block">
@@ -545,9 +581,17 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
                           </p>
                         )}
                       </div>
-                      <div className="bg-brand-primary/5 px-3 py-1 rounded-lg border border-brand-primary/10">
-                        <span className="font-black text-brand-primary">{volunteer.calculatedStats.total}</span>
-                        <span className="text-xs text-brand-primary/70 ml-1">pts</span>
+                      <div className={clsx(
+                        "px-3 py-1 rounded-lg border transition-all",
+                        volunteer.calculatedStats.total < 31 
+                          ? "bg-red-50 border-red-200 text-red-700" 
+                          : "bg-brand-primary/5 border-brand-primary/10 text-brand-primary"
+                      )}>
+                        <span className="font-black">{volunteer.calculatedStats.total}</span>
+                        <span className={clsx(
+                          "text-xs ml-1",
+                          volunteer.calculatedStats.total < 31 ? "text-red-400" : "text-brand-primary/70"
+                        )}>pts</span>
                       </div>
                     </div>
                   </div>
