@@ -391,11 +391,11 @@ export function RankingView({ volunteers, isAdmin, onResetScores }: RankingViewP
       ) : (
         <>
           {/* Podium for Top 3 */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden p-8 sm:p-12 mb-10 mt-4 relative">
+          <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden pt-16 pb-8 px-8 sm:pt-24 sm:pb-12 sm:px-12 mb-10 mt-4 relative">
             {/* Decorative background element */}
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-primary via-brand-accent to-brand-secondary"></div>
             
-            <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-6 sm:gap-10 mt-4 mb-2 relative z-10">
+            <div className="flex flex-col sm:flex-row justify-center items-center sm:items-end gap-6 sm:gap-10 mt-12 mb-2 relative z-10">
               {/* 2nd Place (Silver) */}
               {top3[1] && (
                 <div className="flex flex-col items-center order-2 sm:order-1 w-full sm:w-1/3 max-w-[200px]">
