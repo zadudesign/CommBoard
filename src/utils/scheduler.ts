@@ -71,32 +71,41 @@ export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig
 
         // Sort candidates
         eligible.sort((a, b) => {
-          // 1. Weekly load (balance shifts within the SAME week to avoid fatigue)
+          // 1. Avoid Saturday Morning + Afternoon double shift (Preference)
+          const aHasSatConflict = (service.day === 'Sábado Tarde' && (weeklyAssignments[week][a.id] || []).some(as => as.day === 'Sábado Mañana')) ||
+                                 (service.day === 'Sábado Mañana' && (weeklyAssignments[week][a.id] || []).some(as => as.day === 'Sábado Tarde'));
+          const bHasSatConflict = (service.day === 'Sábado Tarde' && (weeklyAssignments[week][b.id] || []).some(as => as.day === 'Sábado Mañana')) ||
+                                 (service.day === 'Sábado Mañana' && (weeklyAssignments[week][b.id] || []).some(as => as.day === 'Sábado Tarde'));
+          
+          if (aHasSatConflict && !bHasSatConflict) return 1;
+          if (!aHasSatConflict && bHasSatConflict) return -1;
+
+          // 2. Weekly load (balance shifts within the SAME week to avoid fatigue)
           const aWeekLoad = (weeklyAssignments[week][a.id] || []).length;
           const bWeekLoad = (weeklyAssignments[week][b.id] || []).length;
           if (aWeekLoad !== bWeekLoad) return aWeekLoad - bWeekLoad;
 
-          // 2. Role rotation (fewest times doing THIS role)
+          // 3. Role rotation (fewest times doing THIS role)
           const aRoleCount = roleAssignmentsCount[a.id]?.[role] || 0;
           const bRoleCount = roleAssignmentsCount[b.id]?.[role] || 0;
           if (aRoleCount !== bRoleCount) return aRoleCount - bRoleCount;
 
-          // 3. Day rotation (fewest times doing THIS day)
+          // 4. Day rotation (fewest times doing THIS day)
           const aDayCount = dayAssignmentsCount[a.id]?.[service.day] || 0;
           const bDayCount = dayAssignmentsCount[b.id]?.[service.day] || 0;
           if (aDayCount !== bDayCount) return aDayCount - bDayCount;
 
-          // 4. Prioritize those with fewer total assignments (balance)
+          // 5. Prioritize those with fewer total assignments (balance)
           const countDiff = assignmentsCount[a.id] - assignmentsCount[b.id];
           if (countDiff !== 0) return countDiff;
 
-          // 5. Avoid consecutive weeks if possible
+          // 6. Avoid consecutive weeks if possible
           const aWorkedLastWeek = week > 1 && (weeklyAssignments[week - 1][a.id] || []).length > 0;
           const bWorkedLastWeek = week > 1 && (weeklyAssignments[week - 1][b.id] || []).length > 0;
           if (aWorkedLastWeek && !bWorkedLastWeek) return 1;
           if (!aWorkedLastWeek && bWorkedLastWeek) return -1;
 
-          // 6. Randomize to avoid always picking the same person for ties
+          // 7. Randomize to avoid always picking the same person for ties
           return Math.random() - 0.5;
         });
 
