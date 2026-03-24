@@ -3,15 +3,16 @@ import { X, Star } from 'lucide-react';
 
 interface EvaluationModalProps {
   volunteerName: string;
+  initialScores?: { puntualidad: number; orden: number; responsabilidad: number; note?: string };
   onClose: () => void;
   onSubmit: (scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string }) => void;
 }
 
-export function EvaluationModal({ volunteerName, onClose, onSubmit }: EvaluationModalProps) {
-  const [puntualidad, setPuntualidad] = useState<number | null>(null);
-  const [orden, setOrden] = useState<number | null>(null);
-  const [responsabilidad, setResponsabilidad] = useState<number | null>(null);
-  const [note, setNote] = useState('');
+export function EvaluationModal({ volunteerName, initialScores, onClose, onSubmit }: EvaluationModalProps) {
+  const [puntualidad, setPuntualidad] = useState<number | null>(initialScores?.puntualidad ?? null);
+  const [orden, setOrden] = useState<number | null>(initialScores?.orden ?? null);
+  const [responsabilidad, setResponsabilidad] = useState<number | null>(initialScores?.responsabilidad ?? null);
+  const [note, setNote] = useState(initialScores?.note ?? '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

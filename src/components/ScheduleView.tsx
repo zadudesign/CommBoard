@@ -18,7 +18,11 @@ interface ScheduleViewProps {
   isAdmin: boolean;
   selectedVolunteerId: string | null;
   onSelectVolunteer: (id: string | null) => void;
-  onVolunteerEvaluated: (volunteerId: string, scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string }) => Promise<void>;
+  onVolunteerEvaluated: (
+    volunteerId: string, 
+    scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string },
+    oldScores?: { puntualidad: number; orden: number; responsabilidad: number }
+  ) => Promise<void>;
 }
 
 export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelectVolunteer, onVolunteerEvaluated }: ScheduleViewProps) {
@@ -27,7 +31,12 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'monthly' | 'weekly' | 'list' | 'calendar'>('weekly');
-  const [evaluatingShift, setEvaluatingShift] = useState<{ shiftId: string, volunteerId: string, volunteerName: string } | null>(null);
+  const [evaluatingShift, setEvaluatingShift] = useState<{ 
+    shiftId: string, 
+    volunteerId: string, 
+    volunteerName: string,
+    initialScores?: { puntualidad: number; orden: number; responsabilidad: number; note?: string }
+  } | null>(null);
   const [editingShiftId, setEditingShiftId] = useState<string | null>(null);
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [isManageEventsOpen, setIsManageEventsOpen] = useState(false);
@@ -210,6 +219,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     if (!evaluatingShift) return;
     try {
       const total = scores.puntualidad + scores.orden + scores.responsabilidad;
+      
+      // Find the shift to get old scores if it was already evaluated
+      const currentShift = schedule.find(s => s.id === evaluatingShift.shiftId);
+      const oldScores = currentShift?.evaluated ? currentShift.scores : undefined;
+
       // Update shift
       const updatedSchedule = schedule.map(s => 
         s.id === evaluatingShift.shiftId 
@@ -220,7 +234,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       setSchedule(updatedSchedule);
       
       // Update volunteer
-      await onVolunteerEvaluated(evaluatingShift.volunteerId, scores);
+      await onVolunteerEvaluated(evaluatingShift.volunteerId, scores, oldScores);
     } catch (error) {
       console.error("Error saving evaluation:", error);
       alert("Error al guardar la evaluación");
@@ -816,9 +830,17 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 {isAdmin && !isUnfilled && (
                                   <div className="mt-2 pt-2 border-t border-gray-50 flex justify-center">
                                     {shift.evaluated ? (
-                                      <div className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-                                        <CheckCircle2 size={10} /> Evaluado
-                                      </div>
+                                      <button
+                                        onClick={() => setEvaluatingShift({ 
+                                          shiftId: shift.id, 
+                                          volunteerId: shift.volunteerId!, 
+                                          volunteerName: volunteerName!,
+                                          initialScores: shift.scores
+                                        })}
+                                        className="text-[10px] font-bold text-emerald-600 flex items-center gap-1 hover:text-emerald-700 hover:underline"
+                                      >
+                                        <CheckCircle2 size={10} /> Rectificar
+                                      </button>
                                     ) : (
                                       <button
                                         onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
@@ -971,9 +993,17 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                               </button>
                             )}
                             {isAdmin && !isUnfilled && shift.evaluated && (
-                              <div className="text-xs font-medium text-emerald-600 bg-emerald-50 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 border border-emerald-100">
-                                <CheckCircle2 size={14} /> Evaluado
-                              </div>
+                              <button
+                                onClick={() => setEvaluatingShift({ 
+                                  shiftId: shift.id, 
+                                  volunteerId: shift.volunteerId!, 
+                                  volunteerName: volunteerName!,
+                                  initialScores: shift.scores
+                                })}
+                                className="text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 border border-emerald-100 transition-colors"
+                              >
+                                <CheckCircle2 size={14} /> Rectificar
+                              </button>
                             )}
                           </div>
                         </div>
@@ -1014,6 +1044,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       {evaluatingShift && (
         <EvaluationModal
           volunteerName={evaluatingShift.volunteerName}
+          initialScores={evaluatingShift.initialScores}
           onClose={() => setEvaluatingShift(null)}
           onSubmit={handleEvaluateSubmit}
         />

@@ -101,17 +101,28 @@ export default function App() {
     setActiveTab('schedule');
   };
 
-  const handleVolunteerEvaluated = async (volunteerId: string, scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string }) => {
+  const handleVolunteerEvaluated = async (
+    volunteerId: string, 
+    scores: { puntualidad: number; orden: number; responsabilidad: number; note?: string },
+    oldScores?: { puntualidad: number; orden: number; responsabilidad: number }
+  ) => {
     const volunteer = volunteers.find(v => v.id === volunteerId);
     if (volunteer) {
       const currentStats = volunteer.stats || { puntualidad: 0, orden: 0, responsabilidad: 0, extraPoints: 0, total: 0 };
+      
+      // Subtract old scores if they exist
+      const basePuntualidad = currentStats.puntualidad - (oldScores?.puntualidad || 0);
+      const baseOrden = currentStats.orden - (oldScores?.orden || 0);
+      const baseResponsabilidad = currentStats.responsabilidad - (oldScores?.responsabilidad || 0);
+      const baseTotal = currentStats.total - ((oldScores?.puntualidad || 0) + (oldScores?.orden || 0) + (oldScores?.responsabilidad || 0));
+
       const newStats = {
         ...currentStats,
-        puntualidad: currentStats.puntualidad + scores.puntualidad,
-        orden: currentStats.orden + scores.orden,
-        responsabilidad: currentStats.responsabilidad + scores.responsabilidad,
+        puntualidad: basePuntualidad + scores.puntualidad,
+        orden: baseOrden + scores.orden,
+        responsabilidad: baseResponsabilidad + scores.responsabilidad,
         extraPoints: currentStats.extraPoints,
-        total: currentStats.total + scores.puntualidad + scores.orden + scores.responsabilidad
+        total: baseTotal + scores.puntualidad + scores.orden + scores.responsabilidad
       };
       await volunteerService.updateVolunteer(volunteerId, { stats: newStats });
       setVolunteers(prev => prev.map(v => v.id === volunteerId ? { ...v, stats: newStats } : v));
