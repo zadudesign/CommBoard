@@ -53,10 +53,10 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     }
   };
 
-  // Auto-switch to weekly view when a volunteer is selected
+  // Auto-switch to monthly view when a volunteer is selected
   useEffect(() => {
     if (selectedVolunteerId) {
-      setViewMode('weekly');
+      setViewMode('monthly');
     }
   }, [selectedVolunteerId]);
 
