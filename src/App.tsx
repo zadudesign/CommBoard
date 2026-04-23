@@ -11,6 +11,7 @@ import { Volunteer } from './types';
 import { volunteerService, isUsingLocalFallback } from './services/volunteerService';
 import { scheduleService } from './services/scheduleService';
 import { Users, CalendarDays, MessageSquare, AlertTriangle, ShieldCheck, ShieldAlert, KeyRound, Trophy, Settings, CalendarCheck2 } from 'lucide-react';
+import { clsx } from 'clsx';
 
 type Tab = 'volunteers' | 'schedule' | 'ranking' | 'settings' | 'availability';
 
@@ -400,6 +401,23 @@ export default function App() {
       {showChangePinModal && isAdmin && (
         <ChangePin onClose={() => setShowChangePinModal(false)} />
       )}
+      {/* Footer Status */}
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-100 mt-12">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className={clsx(
+              "w-2.5 h-2.5 rounded-full animate-pulse",
+              isUsingLocalFallback ? "bg-amber-400" : "bg-emerald-500"
+            )}></div>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+              Estado: {isUsingLocalFallback ? 'Modo Local' : 'Supabase Cloud Conectado'}
+            </span>
+          </div>
+          <div className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
+            CommBoard 2.0 • Gestión de Voluntariado
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
