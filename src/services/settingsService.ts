@@ -89,8 +89,7 @@ export const settingsService = {
         .from('settings')
         .upsert({
           id: 'system_settings',
-          data: { enabledAvailabilityMonths: settings.enabledAvailabilityMonths },
-          updated_at: new Date().toISOString()
+          data: { enabledAvailabilityMonths: settings.enabledAvailabilityMonths }
         });
       
       if (error) {
