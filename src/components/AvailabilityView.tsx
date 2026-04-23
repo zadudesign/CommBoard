@@ -37,6 +37,17 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
   const loadSettings = async () => {
     const s = await settingsService.getSettings();
     setSettings(s);
+    
+    // Auto-advance to the next open month if current is closed
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    if (!s.enabledAvailabilityMonths.includes(todayKey)) {
+      const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+      const nextMonthKey = `${nextMonth.getFullYear()}-${String(nextMonth.getMonth() + 1).padStart(2, '0')}`;
+      if (s.enabledAvailabilityMonths.includes(nextMonthKey)) {
+        setCurrentDate(nextMonth);
+      }
+    }
   };
 
   const activeVolunteers = useMemo(() => {
@@ -218,9 +229,20 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
             <div>
               <h2 className="text-xl font-bold text-gray-900">Gestión de Disponibilidad</h2>
               {!isMonthEnabled && !isAdmin ? (
-                <div className="flex items-center gap-2 text-red-500 mt-1">
-                  <Lock size={14} />
-                  <p className="text-xs font-black uppercase tracking-wider">Recepción cerrada para {getMonthName(selectedMonth, selectedYear)}</p>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-red-500 mt-1">
+                    <Lock size={14} />
+                    <p className="text-xs font-black uppercase tracking-wider">Recepción cerrada para {getMonthName(selectedMonth, selectedYear)}</p>
+                  </div>
+                  {settings.enabledAvailabilityMonths.some(m => {
+                    const [y, mm] = m.split('-').map(Number);
+                    return y > selectedYear || (y === selectedYear && mm > selectedMonth + 1);
+                  }) && (
+                    <div className="flex items-center gap-2 text-amber-600 mt-0.5">
+                      <ChevronRight size={14} className="animate-pulse" />
+                      <p className="text-[10px] font-bold uppercase tracking-tight">Hay meses futuros abiertos para programación</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-sm text-gray-500">Informa tus preferencias y días de inasistencia</p>
