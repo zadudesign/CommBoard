@@ -6,12 +6,13 @@ import { RankingView } from './components/RankingView';
 import { SettingsView } from './components/SettingsView';
 import { AdminLogin } from './components/AdminLogin';
 import { ChangePin } from './components/ChangePin';
+import { AvailabilityView } from './components/AvailabilityView';
 import { Volunteer } from './types';
 import { volunteerService, isUsingLocalFallback } from './services/volunteerService';
 import { scheduleService } from './services/scheduleService';
-import { Users, CalendarDays, MessageSquare, AlertTriangle, ShieldCheck, ShieldAlert, KeyRound, Trophy, Settings } from 'lucide-react';
+import { Users, CalendarDays, MessageSquare, AlertTriangle, ShieldCheck, ShieldAlert, KeyRound, Trophy, Settings, CalendarCheck2 } from 'lucide-react';
 
-type Tab = 'volunteers' | 'schedule' | 'ranking' | 'settings';
+type Tab = 'volunteers' | 'schedule' | 'ranking' | 'settings' | 'availability';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('schedule');
@@ -202,6 +203,17 @@ export default function App() {
                   <CalendarDays size={18} />
                   <span className="hidden sm:inline">Calendario</span>
                 </button>
+                <button
+                  onClick={() => setActiveTab('availability')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    activeTab === 'availability'
+                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      : 'text-brand-light hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <CalendarCheck2 size={18} />
+                  <span className="hidden sm:inline">Disponibilidad</span>
+                </button>
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('volunteers')}
@@ -342,6 +354,12 @@ export default function App() {
                 selectedVolunteerId={selectedVolunteerId}
                 onSelectVolunteer={setSelectedVolunteerId}
                 onVolunteerEvaluated={handleVolunteerEvaluated}
+              />
+            ) : activeTab === 'availability' ? (
+              <AvailabilityView
+                volunteers={volunteers}
+                isAdmin={isAdmin}
+                onUpdateVolunteers={loadVolunteers}
               />
             ) : activeTab === 'ranking' ? (
               <RankingView

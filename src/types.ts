@@ -59,3 +59,7 @@ export interface RoleTasks {
   role: Role;
   tasks: string[];
 }
+
+export interface SystemSettings {
+  enabledAvailabilityMonths: string[]; // Format "YYYY-MM"
+}
