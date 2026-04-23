@@ -81,8 +81,9 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
       const newSettings = { ...settings, enabledAvailabilityMonths: newEnabledMonths };
       await settingsService.updateSettings(newSettings);
       setSettings(newSettings);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating settings:', error);
+      alert(`Error al guardar configuración en la nube: ${error.message || 'Verifica los permisos de Supabase'}`);
     } finally {
       setIsUpdatingSettings(false);
     }

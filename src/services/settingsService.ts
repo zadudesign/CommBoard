@@ -85,19 +85,17 @@ export const settingsService = {
 
   async updateSettings(settings: SystemSettings): Promise<void> {
     if (isSupabaseConfigured) {
-      try {
-        const { error } = await supabase
-          .from('settings')
-          .upsert({
-            id: 'system_settings',
-            data: { enabledAvailabilityMonths: settings.enabledAvailabilityMonths },
-            updated_at: new Date().toISOString()
-          });
-        
-        if (error) throw error;
-      } catch (e) {
-        console.error("Error saving settings to Supabase, falling back to local", e);
-        localStorage.setItem('system_settings', JSON.stringify(settings));
+      const { error } = await supabase
+        .from('settings')
+        .upsert({
+          id: 'system_settings',
+          data: { enabledAvailabilityMonths: settings.enabledAvailabilityMonths },
+          updated_at: new Date().toISOString()
+        });
+      
+      if (error) {
+        console.error("Error saving settings to Supabase:", error);
+        throw error;
       }
     } else {
       localStorage.setItem('system_settings', JSON.stringify(settings));
