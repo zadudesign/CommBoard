@@ -60,9 +60,9 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
 
   useEffect(() => {
     if (selectedVolunteer) {
-      setLocalRoles(selectedVolunteer.roles || []);
-      setLocalDays(selectedVolunteer.days || []);
-      setLocalRestrictedDates(selectedVolunteer.restrictedDates || []);
+      setLocalRoles(Array.isArray(selectedVolunteer.roles) ? selectedVolunteer.roles : []);
+      setLocalDays(Array.isArray(selectedVolunteer.days) ? selectedVolunteer.days : []);
+      setLocalRestrictedDates(Array.isArray(selectedVolunteer.restrictedDates) ? selectedVolunteer.restrictedDates : []);
     } else {
       setLocalRoles([]);
       setLocalDays([]);
@@ -114,27 +114,30 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
   const toggleRole = (role: Role) => {
     if (!isAdmin && !isMonthEnabled) return;
     setLocalRoles(prev => {
-      const isPresent = prev.includes(role);
+      const safePrev = Array.isArray(prev) ? prev : [];
+      const isPresent = safePrev.includes(role);
       if (isPresent) {
-        return prev.filter(r => r !== role);
+        return safePrev.filter(r => r !== role);
       } else {
-        return [...prev, role];
+        return [...safePrev, role];
       }
     });
   };
 
   const toggleDay = (day: Day) => {
     if (!isAdmin && !isMonthEnabled) return;
-    setLocalDays(prev => 
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
-    );
+    setLocalDays(prev => {
+      const safePrev = Array.isArray(prev) ? prev : [];
+      return safePrev.includes(day) ? safePrev.filter(d => d !== day) : [...safePrev, day]
+    });
   };
 
   const toggleRestrictedDate = (dateStr: string) => {
     if (!isAdmin && !isMonthEnabled) return;
-    setLocalRestrictedDates(prev => 
-      prev.includes(dateStr) ? prev.filter(d => d !== dateStr) : [...prev, dateStr]
-    );
+    setLocalRestrictedDates(prev => {
+      const safePrev = Array.isArray(prev) ? prev : [];
+      return safePrev.includes(dateStr) ? safePrev.filter(d => d !== dateStr) : [...safePrev, dateStr]
+    });
   };
 
   const handleSave = async () => {
