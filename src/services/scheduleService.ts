@@ -21,12 +21,22 @@ export const scheduleService = {
         } as Shift));
       } catch (e) {
         console.error("Error loading schedule from Supabase, falling back to local", e);
-        const data = localStorage.getItem('schedule');
-        return data ? JSON.parse(data) : [];
+        try {
+          const data = localStorage.getItem('schedule');
+          return data ? JSON.parse(data) : [];
+        } catch (parseError) {
+          console.error("Local schedule corruption:", parseError);
+          return [];
+        }
       }
     } else {
-      const data = localStorage.getItem('schedule');
-      return data ? JSON.parse(data) : [];
+      try {
+        const data = localStorage.getItem('schedule');
+        return data ? JSON.parse(data) : [];
+      } catch (parseError) {
+        console.error("Local schedule corruption:", parseError);
+        return [];
+      }
     }
   },
   

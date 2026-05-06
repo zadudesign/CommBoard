@@ -74,12 +74,22 @@ export const settingsService = {
         };
       } catch (e) {
         console.error("Error loading settings from Supabase, falling back to local", e);
-        const data = localStorage.getItem('system_settings');
-        return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+        try {
+          const data = localStorage.getItem('system_settings');
+          return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+        } catch (parseError) {
+          console.error("Local storage corruption:", parseError);
+          return DEFAULT_SETTINGS;
+        }
       }
     } else {
-      const data = localStorage.getItem('system_settings');
-      return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+      try {
+        const data = localStorage.getItem('system_settings');
+        return data ? JSON.parse(data) : DEFAULT_SETTINGS;
+      } catch (parseError) {
+        console.error("Local storage corruption:", parseError);
+        return DEFAULT_SETTINGS;
+      }
     }
   },
 

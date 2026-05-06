@@ -98,8 +98,13 @@ class SupabaseVolunteerService implements IVolunteerService {
 
 class LocalVolunteerService implements IVolunteerService {
   private getLocal(): Volunteer[] {
-    const data = localStorage.getItem('volunteers');
-    return data ? JSON.parse(data) : [];
+    try {
+      const data = localStorage.getItem('volunteers');
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error("Local volunteers corruption:", e);
+      return [];
+    }
   }
 
   private setLocal(data: Volunteer[]) {

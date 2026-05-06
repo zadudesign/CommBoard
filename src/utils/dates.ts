@@ -52,8 +52,8 @@ export function getCurrentWeekNumber(month?: number, year?: number): number {
   
   if (targetMonth === now.getMonth() && targetYear === now.getFullYear()) {
     const date = now.getDate();
-    // Simple approximation: week 1 is days 1-7, week 2 is 8-14, etc.
-    return Math.min(4, Math.ceil(date / 7));
+    // Week 1 is days leading to first Wed/Sat, relative to first service day
+    return Math.ceil(date / 7);
   }
   return 1;
 }

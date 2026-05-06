@@ -263,7 +263,7 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
             >
               <option value="">Selecciona un Voluntario</option>
               {activeVolunteers.map(v => (
-                <option key={v.id} value={v.id}>{v.name.toLowerCase()}</option>
+                <option key={v.id} value={v.id}>{(v.name || 'Sin nombre').toLowerCase()}</option>
               ))}
             </select>
           </div>
@@ -372,7 +372,10 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
 
                     <div className="grid grid-cols-1 gap-2">
                       {monthDays.map(date => {
-                        const dateStr = date.toISOString().split('T')[0];
+                        const y = date.getFullYear();
+                        const m = String(date.getMonth() + 1).padStart(2, '0');
+                        const d = String(date.getDate()).padStart(2, '0');
+                        const dateStr = `${y}-${m}-${d}`;
                         const isRestricted = localRestrictedDates.includes(dateStr);
                         const isWednesday = date.getDay() === 3;
                         

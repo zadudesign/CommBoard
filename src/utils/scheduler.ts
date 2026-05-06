@@ -2,7 +2,6 @@ import { Volunteer, Shift, Role, Day, ScheduleConfig } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { getServiceDate } from './dates';
 
-const WEEKS = 4;
 const FULL_ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
 
 export const SERVICES: { day: Day; roles: Role[] }[] = [
@@ -27,17 +26,24 @@ export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig
     roleAssignmentsCount[v.id] = {};
     dayAssignmentsCount[v.id] = {};
   });
-  for (let w = 1; w <= WEEKS; w++) {
+
+  // Calculate number of weeks needed (some months need up to 6 "slots" for Wednesdays/Saturdays)
+  const MAX_WEEKS = 6;
+  for (let w = 1; w <= MAX_WEEKS; w++) {
     weeklyAssignments[w] = {};
   }
 
-  for (let week = 1; week <= WEEKS; week++) {
+  for (let week = 1; week <= MAX_WEEKS; week++) {
     for (const service of SERVICES) {
       const serviceDate = getServiceDate(week, service.day, month, year);
-      const yearStr = serviceDate.getFullYear();
-      const monthStr = String(serviceDate.getMonth() + 1).padStart(2, '0');
+      
+      // Skip if the calculated date is in the next month
+      if (serviceDate.getMonth() !== month) continue;
+
+      const y = serviceDate.getFullYear();
+      const m = String(serviceDate.getMonth() + 1).padStart(2, '0');
       const d = String(serviceDate.getDate()).padStart(2, '0');
-      const dateStr = `${yearStr}-${monthStr}-${d}`;
+      const dateStr = `${y}-${m}-${d}`;
 
       for (const role of service.roles) {
         // Find eligible volunteers

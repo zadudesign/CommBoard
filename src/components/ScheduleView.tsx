@@ -116,7 +116,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     // Iterate through dates
     const current = new Date(start);
     while (current <= end) {
-      const dateStr = current.toISOString().split('T')[0];
+      const y = current.getFullYear();
+      const m = String(current.getMonth() + 1).padStart(2, '0');
+      const d = String(current.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+      
       const month = current.getMonth();
       const year = current.getFullYear();
       // Week number is an approximation for special events
