@@ -4,7 +4,7 @@ import { volunteerService } from '../services/volunteerService';
 import { settingsService } from '../services/settingsService';
 import { CalendarCheck2, User, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Save, Info, Lock, Unlock, ShieldCheck } from 'lucide-react';
 import { clsx } from 'clsx';
-import { getMonthName } from '../utils/dates';
+import { getMonthName, monthNames } from '../utils/dates';
 
 interface AvailabilityViewProps {
   volunteers: Volunteer[];
@@ -51,7 +51,9 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
   };
 
   const activeVolunteers = useMemo(() => {
-    return volunteers.filter(v => v.active !== false).sort((a, b) => a.name.localeCompare(b.name));
+    return volunteers
+      .filter(v => v.active !== false)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }, [volunteers]);
 
   const selectedVolunteer = useMemo(() => {
@@ -403,7 +405,9 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                                 <span className="block text-xs text-gray-400 font-medium uppercase tracking-wider">
                                   {isWednesday ? 'Miércoles' : 'Sábado'}
                                 </span>
-                                <span className="block">{date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}</span>
+                                <span className="block text-xs text-gray-500 font-medium lowercase">
+                                  {monthNames[date.getMonth()]} {date.getFullYear()}
+                                </span>
                               </div>
                             </div>
                             {isRestricted ? (

@@ -31,18 +31,20 @@ export function isToday(date: Date): boolean {
          date.getFullYear() === today.getFullYear();
 }
 
+export const monthNames = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
 export function formatDate(date: Date): string {
-  const formatter = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric' });
-  const formatted = formatter.format(date);
-  // Capitalize first letter
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  const dayName = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()];
+  const day = date.getDate();
+  return `${dayName} ${day}`;
 }
 
 export function getMonthName(month: number, year: number): string {
-  const date = new Date(year, month, 1);
-  const formatter = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' });
-  const formatted = formatter.format(date).replace(' de ', ' ');
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  const name = monthNames[month] || 'Mes';
+  return `${name} ${year}`;
 }
 
 export function getCurrentWeekNumber(month?: number, year?: number): number {
