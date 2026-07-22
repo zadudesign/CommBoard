@@ -1,4 +1,4 @@
-export type Role = 'Sonido' | 'Transmisión' | 'Proyección' | 'Medios Digitales' | 'Coordinación';
+export type Role = 'Sonido' | 'Transmisión' | 'Proyección' | 'Medios Digitales' | 'Coordinación' | 'Coordina Piso';
 export type Day = 'Miércoles' | 'Sábado Mañana' | 'Sábado Tarde';
 
 export interface VolunteerStats {

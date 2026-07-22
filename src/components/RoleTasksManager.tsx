@@ -9,7 +9,7 @@ export function RoleTasksManager() {
   const [isSaving, setIsSaving] = useState(false);
   const [newTask, setNewTask] = useState<{ [key in Role]?: string }>({});
 
-  const roles: Role[] = ['Sonido', 'Transmisión', 'Proyección', 'Medios Digitales', 'Coordinación'];
+  const roles: Role[] = ['Sonido', 'Transmisión', 'Proyección', 'Medios Digitales', 'Coordinación', 'Coordina Piso'];
 
   useEffect(() => {
     loadTasks();

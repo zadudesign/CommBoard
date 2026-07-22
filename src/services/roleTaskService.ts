@@ -9,6 +9,7 @@ const INITIAL_TASKS: RoleTasks[] = [
   { role: 'Proyección', tasks: [] },
   { role: 'Medios Digitales', tasks: [] },
   { role: 'Coordinación', tasks: [] },
+  { role: 'Coordina Piso', tasks: [] },
 ];
 
 export const roleTaskService = {

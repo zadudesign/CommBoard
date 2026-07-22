@@ -1,4 +1,4 @@
-import { Headphones, Radio, MonitorPlay, Smartphone, ClipboardList, LucideIcon } from 'lucide-react';
+import { Headphones, Radio, MonitorPlay, Smartphone, ClipboardList, Layers, LucideIcon } from 'lucide-react';
 import { Role } from '../types';
 
 export const ROLE_CONFIG: Record<Role, { icon: LucideIcon, color: string, bg: string, border: string, darkBg: string }> = {
@@ -36,5 +36,12 @@ export const ROLE_CONFIG: Record<Role, { icon: LucideIcon, color: string, bg: st
     bg: 'bg-emerald-50',
     border: 'border-emerald-200',
     darkBg: 'bg-emerald-700'
+  },
+  'Coordina Piso': {
+    icon: Layers,
+    color: 'text-amber-700',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    darkBg: 'bg-amber-700'
   }
 };

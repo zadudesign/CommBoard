@@ -95,7 +95,7 @@ export function VolunteerList({ volunteers, isAdmin, onAdd, onEdit, onDelete, on
     });
   }, [volunteers, roleFilter, dayFilter]);
 
-  const ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+  const ROLES: Role[] = ['Coordinación', 'Coordina Piso', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
   const DAYS: Day[] = ['Miércoles', 'Sábado Mañana', 'Sábado Tarde'];
 
   const activeCount = useMemo(() => {

@@ -2,12 +2,13 @@ import { Volunteer, Shift, Role, Day, ScheduleConfig } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { getServiceDate } from './dates';
 
-const FULL_ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+const STANDARD_ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+const SATURDAY_MORNING_ROLES: Role[] = ['Coordinación', 'Coordina Piso', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
 
 export const SERVICES: { day: Day; roles: Role[] }[] = [
-  { day: 'Miércoles', roles: FULL_ROLES },
-  { day: 'Sábado Mañana', roles: FULL_ROLES },
-  { day: 'Sábado Tarde', roles: FULL_ROLES },
+  { day: 'Miércoles', roles: STANDARD_ROLES },
+  { day: 'Sábado Mañana', roles: SATURDAY_MORNING_ROLES },
+  { day: 'Sábado Tarde', roles: STANDARD_ROLES },
 ];
 
 export function generateSchedule(volunteers: Volunteer[], config: ScheduleConfig, month: number, year: number): Shift[] {

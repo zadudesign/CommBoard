@@ -8,7 +8,7 @@ interface SpecialEventFormProps {
   onCancel: () => void;
 }
 
-const ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+const ROLES: Role[] = ['Coordinación', 'Coordina Piso', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
 
 export function SpecialEventForm({ onSubmit, onCancel }: SpecialEventFormProps) {
   const [name, setName] = useState('');

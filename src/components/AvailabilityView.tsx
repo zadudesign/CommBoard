@@ -165,7 +165,7 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
     }
   };
 
-  const AVAILABLE_ROLES: Role[] = ['Medios Digitales', 'Proyección', 'Transmisión'];
+  const AVAILABLE_ROLES: Role[] = ['Coordina Piso', 'Medios Digitales', 'Proyección', 'Transmisión'];
   const AVAILABLE_DAYS: Day[] = ['Miércoles', 'Sábado Mañana', 'Sábado Tarde'];
 
   return (

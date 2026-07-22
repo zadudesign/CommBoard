@@ -12,87 +12,131 @@ export interface IVolunteerService {
 class SupabaseVolunteerService implements IVolunteerService {
   private tableName = 'volunteers';
 
+  private getLocalFallback(): Volunteer[] {
+    try {
+      const data = localStorage.getItem('volunteers');
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error("Local volunteers corruption:", e);
+      return [];
+    }
+  }
+
+  private setLocalFallback(data: Volunteer[]) {
+    localStorage.setItem('volunteers', JSON.stringify(data));
+  }
+
   async getVolunteers(): Promise<Volunteer[]> {
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select('*');
-    
-    if (error) throw error;
-    
-    return (data || []).map(v => ({
-      ...v,
-      photoUrl: v.photo_url,
-      createdAt: v.created_at ? new Date(v.created_at).getTime() : undefined,
-      restrictedDates: v.restricted_dates,
-      active: v.stats?.active ?? v.active ?? true
-    } as Volunteer));
+    try {
+      const { data, error } = await supabase
+        .from(this.tableName)
+        .select('*');
+      
+      if (error) throw error;
+      
+      return (data || []).map(v => ({
+        ...v,
+        photoUrl: v.photo_url,
+        createdAt: v.created_at ? new Date(v.created_at).getTime() : undefined,
+        restrictedDates: v.restricted_dates,
+        active: v.stats?.active ?? v.active ?? true
+      } as Volunteer));
+    } catch (e) {
+      console.error("Error loading volunteers from Supabase, falling back to local storage:", e);
+      return this.getLocalFallback();
+    }
   }
 
   async addVolunteer(volunteer: Omit<Volunteer, 'id'>): Promise<Volunteer> {
-    const statsWithActive = { ...(volunteer.stats || {}), active: volunteer.active ?? true };
-    
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .insert([{
-        name: volunteer.name,
-        photo_url: volunteer.photoUrl,
-        roles: volunteer.roles,
-        days: volunteer.days,
-        stats: statsWithActive,
-        restricted_dates: volunteer.restrictedDates
-      }])
-      .select()
-      .single();
-    
-    if (error) throw error;
-    
-    return {
-      ...data,
-      photoUrl: data.photo_url,
-      createdAt: data.created_at ? new Date(data.created_at).getTime() : undefined,
-      restrictedDates: data.restricted_dates,
-      active: data.stats?.active ?? true
-    } as Volunteer;
+    try {
+      const statsWithActive = { ...(volunteer.stats || {}), active: volunteer.active ?? true };
+      
+      const { data, error } = await supabase
+        .from(this.tableName)
+        .insert([{
+          name: volunteer.name,
+          photo_url: volunteer.photoUrl,
+          roles: volunteer.roles,
+          days: volunteer.days,
+          stats: statsWithActive,
+          restricted_dates: volunteer.restrictedDates
+        }])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return {
+        ...data,
+        photoUrl: data.photo_url,
+        createdAt: data.created_at ? new Date(data.created_at).getTime() : undefined,
+        restrictedDates: data.restricted_dates,
+        active: data.stats?.active ?? true
+      } as Volunteer;
+    } catch (e) {
+      console.error("Error adding volunteer to Supabase, falling back to local storage:", e);
+      const volunteers = this.getLocalFallback();
+      const newVolunteer = { ...volunteer, id: uuidv4(), active: volunteer.active ?? true } as Volunteer;
+      volunteers.push(newVolunteer);
+      this.setLocalFallback(volunteers);
+      return newVolunteer;
+    }
   }
 
   async updateVolunteer(id: string, volunteer: Partial<Volunteer>): Promise<void> {
-    const updateData: any = {};
-    if (volunteer.name !== undefined) updateData.name = volunteer.name;
-    if (volunteer.photoUrl !== undefined) updateData.photo_url = volunteer.photoUrl;
-    if (volunteer.roles !== undefined) updateData.roles = volunteer.roles;
-    if (volunteer.days !== undefined) updateData.days = volunteer.days;
-    if (volunteer.restrictedDates !== undefined) updateData.restricted_dates = volunteer.restrictedDates;
-    
-    if (volunteer.active !== undefined || volunteer.stats !== undefined) {
-      // Fetch current stats to merge properly
-      const { data: currentData } = await supabase.from(this.tableName).select('stats').eq('id', id).single();
-      const currentStats = currentData?.stats || {};
+    try {
+      const updateData: any = {};
+      if (volunteer.name !== undefined) updateData.name = volunteer.name;
+      if (volunteer.photoUrl !== undefined) updateData.photo_url = volunteer.photoUrl;
+      if (volunteer.roles !== undefined) updateData.roles = volunteer.roles;
+      if (volunteer.days !== undefined) updateData.days = volunteer.days;
+      if (volunteer.restrictedDates !== undefined) updateData.restricted_dates = volunteer.restrictedDates;
       
-      updateData.stats = {
-        ...currentStats,
-        ...(volunteer.stats || {})
-      };
+      if (volunteer.active !== undefined || volunteer.stats !== undefined) {
+        // Fetch current stats to merge properly
+        const { data: currentData } = await supabase.from(this.tableName).select('stats').eq('id', id).single();
+        const currentStats = currentData?.stats || {};
+        
+        updateData.stats = {
+          ...currentStats,
+          ...(volunteer.stats || {})
+        };
+        
+        if (volunteer.active !== undefined) {
+          updateData.stats.active = volunteer.active;
+        }
+      }
+
+      const { error } = await supabase
+        .from(this.tableName)
+        .update(updateData)
+        .eq('id', id);
       
-      if (volunteer.active !== undefined) {
-        updateData.stats.active = volunteer.active;
+      if (error) throw error;
+    } catch (e) {
+      console.error("Error updating volunteer in Supabase, falling back to local storage:", e);
+      const volunteers = this.getLocalFallback();
+      const index = volunteers.findIndex(v => v.id === id);
+      if (index !== -1) {
+        volunteers[index] = { ...volunteers[index], ...volunteer };
+        this.setLocalFallback(volunteers);
       }
     }
-
-    const { error } = await supabase
-      .from(this.tableName)
-      .update(updateData)
-      .eq('id', id);
-    
-    if (error) throw error;
   }
 
   async deleteVolunteer(id: string): Promise<void> {
-    const { error } = await supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
+    try {
+      const { error } = await supabase
+        .from(this.tableName)
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    } catch (e) {
+      console.error("Error deleting volunteer from Supabase, falling back to local storage:", e);
+      const volunteers = this.getLocalFallback();
+      this.setLocalFallback(volunteers.filter(v => v.id !== id));
+    }
   }
 }
 

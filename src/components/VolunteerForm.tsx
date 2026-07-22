@@ -11,7 +11,7 @@ interface VolunteerFormProps {
   onCancel: () => void;
 }
 
-const ROLES: Role[] = ['Coordinación', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+const ROLES: Role[] = ['Coordinación', 'Coordina Piso', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
 const DAYS: Day[] = ['Miércoles', 'Sábado Mañana', 'Sábado Tarde'];
 
 export function VolunteerForm({ volunteer, onSubmit, onCancel }: VolunteerFormProps) {
