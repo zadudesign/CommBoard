@@ -228,6 +228,7 @@ export default function App() {
                   <span className="hidden sm:inline">Voluntarios</span>
                 </button>
               )}
+              {isAdmin && (
                 <button
                   onClick={() => setActiveTab('ranking')}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
@@ -239,6 +240,7 @@ export default function App() {
                   <Trophy size={18} />
                   <span className="hidden sm:inline">Ranking</span>
                 </button>
+              )}
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('settings')}
@@ -269,7 +271,9 @@ export default function App() {
                   <button
                     onClick={() => {
                       setIsAdmin(false);
-                      if (activeTab === 'volunteers') setActiveTab('schedule');
+                      if (activeTab === 'volunteers' || activeTab === 'ranking') {
+                        setActiveTab('schedule');
+                      }
                     }}
                     className="flex items-center gap-2 px-4 py-2.5 text-sm font-black text-white bg-brand-accent hover:bg-brand-accent/90 rounded-xl transition-all shadow-lg active:scale-95"
                   >
@@ -362,19 +366,19 @@ export default function App() {
                 isAdmin={isAdmin}
                 onUpdateVolunteers={loadVolunteers}
               />
-            ) : activeTab === 'ranking' ? (
+            ) : activeTab === 'ranking' && isAdmin ? (
               <RankingView
                 volunteers={volunteers}
                 isAdmin={isAdmin}
                 onResetScores={handleResetScores}
               />
-            ) : (
+            ) : activeTab === 'settings' && isAdmin ? (
               <SettingsView
                 volunteers={volunteers}
                 onResetScores={handleResetScores}
                 onFormatDatabase={handleFormatDatabase}
               />
-            )}
+            ) : null}
           </div>
         )}
       </main>
