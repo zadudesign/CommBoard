@@ -30,7 +30,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const [schedule, setSchedule] = useState<Shift[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'monthly' | 'weekly' | 'list' | 'calendar'>('weekly');
+  const [viewMode, setViewMode] = useState<'monthly' | 'weekly' | 'calendar'>('weekly');
   const [evaluatingShift, setEvaluatingShift] = useState<{ 
     shiftId: string, 
     volunteerId: string, 
@@ -370,6 +370,13 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
         });
       }
     });
+
+    const roleOrder = ['Coordinación', 'Coordina Piso', 'Medios Digitales', 'Proyección', 'Sonido', 'Transmisión'];
+    services.forEach(s => {
+      s.shifts.sort((a, b) => {
+        return roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role);
+      });
+    });
     
     return services.sort((a, b) => {
       const dateDiff = a.date.getTime() - b.date.getTime();
@@ -445,16 +452,6 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
           <div className="flex flex-wrap items-center gap-3">
             {/* View Mode Toggle */}
             <div className="flex bg-brand-primary/5 p-1.5 rounded-2xl border border-brand-light/30 shadow-inner">
-              <button
-                onClick={() => setViewMode('list')}
-                className={clsx(
-                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
-                  viewMode === 'list' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
-                )}
-              >
-                <List size={14} />
-                Lista
-              </button>
               <button
                 onClick={() => setViewMode('weekly')}
                 className={clsx(
@@ -723,7 +720,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                   })}
                 </div>
               </div>
-            ) : (viewMode === 'monthly' || viewMode === 'weekly') ? (
+            ) : (
               <div className="col-span-1 xl:col-span-2 space-y-4">
                 {viewMode === 'weekly' && (
                   <div className="mb-2 flex justify-between items-center">
@@ -739,37 +736,42 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                         isToday(service.date) ? "border-brand-primary/30 bg-brand-primary/5 ring-1 ring-brand-primary/20" : "border-gray-100"
                       )}
                     >
-                      <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
+                      <div className={clsx(
+                        "px-5 py-3.5 border-b flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap",
+                        isToday(service.date) ? "bg-brand-primary/5 border-brand-primary/10" : "bg-gray-50/70 border-gray-100"
+                      )}>
+                        <div className="flex items-center gap-3">
                           <div className={clsx(
-                            "p-3 rounded-xl shadow-sm border",
-                            isToday(service.date) ? "bg-brand-primary text-white border-brand-primary/20" : "bg-gray-50 text-gray-500 border-gray-100"
+                            "p-2 rounded-xl border shadow-xs",
+                            isToday(service.date) ? "bg-brand-primary text-white border-brand-primary/10" : "bg-white text-gray-400 border-gray-150"
                           )}>
-                            <CalendarIcon size={24} />
+                            <CalendarIcon size={18} />
                           </div>
                           <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className={clsx("font-bold text-base capitalize", isToday(service.date) ? "text-brand-primary" : "text-gray-900")}>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className={clsx("font-extrabold text-base capitalize", isToday(service.date) ? "text-brand-primary" : "text-gray-900")}>
                                 {formatDate(service.date)}
                               </h4>
                               {isToday(service.date) && (
-                                <span className="bg-brand-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="bg-brand-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                   Hoy
                                 </span>
                               )}
                               {service.isEvent && (
-                                <span className="bg-brand-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="bg-brand-accent text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                   Evento
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
-                              {service.day}
-                            </p>
                           </div>
                         </div>
+                        <span className="text-xs font-black text-brand-primary bg-brand-primary/5 px-3 py-1.5 rounded-xl border border-brand-primary/10 uppercase tracking-widest">
+                          {service.day}
+                        </span>
+                      </div>
 
-                        <div className="flex flex-wrap gap-2 sm:justify-end">
+                      <div className="p-4 sm:p-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                           {service.shifts.map(shift => {
                             const roleConfig = ROLE_CONFIG[shift.role];
                             const RoleIcon = roleConfig.icon;
@@ -781,7 +783,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                               <div 
                                 key={shift.id} 
                                 className={clsx(
-                                  "flex flex-col gap-1 p-3 rounded-xl border bg-white min-w-[140px] transition-all",
+                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border bg-white transition-all hover:border-gray-300 hover:shadow-xs",
                                   isHighlighted ? "ring-2 ring-brand-primary border-brand-primary shadow-md" : "border-gray-100"
                                 )}
                               >
@@ -832,7 +834,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 </div>
 
                                 {isAdmin && !isUnfilled && (
-                                  <div className="mt-2 pt-2 border-t border-gray-50 flex justify-center">
+                                  <div className="mt-2 pt-2 border-t border-gray-100 flex justify-center">
                                     {shift.evaluated ? (
                                       <button
                                         onClick={() => setEvaluatingShift({ 
@@ -875,170 +877,6 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                     </p>
                   </div>
                 )}
-              </div>
-            ) : viewMode === 'list' ? (
-              <div className="col-span-1 xl:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="divide-y divide-gray-100">
-                  {filteredSchedule
-                    .filter(s => !selectedVolunteerId || s.volunteerId === selectedVolunteerId)
-                    .sort((a, b) => {
-                      const dateA = a.date ? new Date(a.date) : getServiceDate(a.week, a.day as any, selectedMonth, selectedYear);
-                      const dateB = b.date ? new Date(b.date) : getServiceDate(b.week, b.day as any, selectedMonth, selectedYear);
-                      const dateDiff = dateA.getTime() - dateB.getTime();
-                      if (dateDiff !== 0) return dateDiff;
-                      if ((a.day as string).includes('Mañana') && (b.day as string).includes('Tarde')) return -1;
-                      if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
-                      return 0;
-                    })
-                    .map(shift => {
-                      const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
-                      const dateStr = formatDate(date);
-                      const shiftTime = shift.eventName ? shift.eventName : (shift.day as string).includes('Mañana') ? 'Mañana' : (shift.day as string).includes('Tarde') ? 'Tarde' : '';
-                      const roleConfig = ROLE_CONFIG[shift.role];
-                      const RoleIcon = roleConfig.icon;
-                      const volunteerName = getVolunteerName(shift.volunteerId);
-                      const isUnfilled = !shift.volunteerId;
-                      
-                      return (
-                        <div key={shift.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center gap-4">
-                            <div className={clsx(
-                              "p-3 rounded-xl shadow-sm border",
-                              isToday(date) ? "bg-brand-primary text-white border-brand-primary/20" : "bg-gray-50 text-gray-500 border-gray-100"
-                            )}>
-                              <CalendarIcon size={24} />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h4 className={clsx("font-bold text-base capitalize", isToday(date) ? "text-brand-primary" : "text-gray-900")}>
-                                  {dateStr}
-                                </h4>
-                                {isToday(date) && (
-                                  <span className="bg-brand-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    Hoy
-                                  </span>
-                                )}
-                                {shift.eventName && (
-                                  <span className="bg-brand-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                    Evento
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                {shiftTime && (
-                                  <span className={clsx(
-                                    "text-xs font-medium uppercase tracking-wider px-2 py-0.5 rounded-md",
-                                    shift.eventName ? "bg-brand-accent/10 text-brand-accent" : "bg-gray-100 text-gray-500"
-                                  )}>
-                                    {shiftTime}
-                                  </span>
-                                )}
-                                <span className={clsx("text-xs font-medium flex items-center gap-1 px-2 py-0.5 rounded-md border", roleConfig.color, "bg-white")}>
-                                  <RoleIcon size={12} />
-                                  {shift.role}
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setViewingTasksRole(shift.role);
-                                    }}
-                                    className="ml-1.5 p-1 text-gray-400 hover:text-brand-primary hover:bg-brand-primary/10 rounded-full transition-all"
-                                    title="Ver tareas"
-                                  >
-                                    <Info size={14} />
-                                  </button>
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100">
-                            {!selectedVolunteerId && (
-                              <div className="flex items-center gap-2">
-                                <UserCircle2 size={16} className={isUnfilled ? "text-red-400" : "text-gray-400"} />
-                                {isAdmin && editingShiftId === shift.id ? (
-                                  <select
-                                    autoFocus
-                                    className="text-sm font-bold text-brand-primary bg-white border border-brand-primary/30 rounded-lg px-2 py-1 outline-none shadow-sm capitalize"
-                                    value={shift.volunteerId || ''}
-                                    onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
-                                    onBlur={() => setEditingShiftId(null)}
-                                  >
-                                    <option value="">Sin asignar</option>
-                                    {volunteers
-                                      .filter(v => v.roles.includes(shift.role))
-                                      .map(v => (
-                                        <option key={v.id} value={v.id}>{v.name}</option>
-                                      ))
-                                    }
-                                  </select>
-                                ) : (
-                                  <div 
-                                    className={clsx(
-                                      "flex items-center gap-1.5",
-                                      isAdmin && "cursor-pointer hover:bg-gray-100 px-2 py-1 rounded-lg transition-colors group"
-                                    )}
-                                    onClick={() => isAdmin && setEditingShiftId(shift.id)}
-                                  >
-                                    <span className={clsx("text-sm font-medium capitalize", isUnfilled ? "text-red-600" : "text-gray-700")}>
-                                      {isUnfilled ? 'Sin asignar' : volunteerName}
-                                    </span>
-                                    {isAdmin && <Settings2 size={12} className="text-gray-300 group-hover:text-brand-primary transition-colors" />}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            
-                            {isAdmin && !isUnfilled && !shift.evaluated && (
-                              <button
-                                onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
-                                className="text-xs font-medium text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
-                              >
-                                <Star size={14} /> Evaluar
-                              </button>
-                            )}
-                            {isAdmin && !isUnfilled && shift.evaluated && (
-                              <button
-                                onClick={() => setEvaluatingShift({ 
-                                  shiftId: shift.id, 
-                                  volunteerId: shift.volunteerId!, 
-                                  volunteerName: volunteerName!,
-                                  initialScores: shift.scores
-                                })}
-                                className="text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 border border-emerald-100 transition-colors"
-                              >
-                                <CheckCircle2 size={14} /> Rectificar
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  {filteredSchedule.filter(s => !selectedVolunteerId || s.volunteerId === selectedVolunteerId).length === 0 && (
-                    <div className="p-12 text-center">
-                      <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CalendarIcon className="text-gray-400" size={28} />
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-1">No hay turnos</h3>
-                      <p className="text-gray-500">
-                        {selectedVolunteerId 
-                          ? 'No tienes turnos pendientes para el resto del mes.' 
-                          : 'No hay turnos programados para el resto del mes.'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="col-span-1 xl:col-span-2 p-12 text-center bg-white rounded-2xl border border-gray-200 shadow-sm">
-                <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CalendarIcon className="text-gray-400" size={28} />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No hay turnos</h3>
-                <p className="text-gray-500">
-                  {selectedVolunteerId 
-                    ? 'No tienes turnos pendientes para el resto del mes.' 
-                    : 'No hay turnos programados para el resto del mes.'}
-                </p>
               </div>
             )}
           </div>
