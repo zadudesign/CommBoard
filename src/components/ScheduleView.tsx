@@ -783,18 +783,20 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                               <div 
                                 key={shift.id} 
                                 className={clsx(
-                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border bg-white transition-all hover:border-gray-300 hover:shadow-xs",
-                                  isHighlighted ? "ring-2 ring-brand-primary border-brand-primary shadow-md" : "border-gray-100"
+                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all hover:scale-[1.01] hover:shadow-sm",
+                                  roleConfig.bg,
+                                  roleConfig.border,
+                                  isHighlighted ? "ring-2 ring-brand-primary border-brand-primary shadow-md" : ""
                                 )}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1", roleConfig.color)}>
-                                    <RoleIcon size={10} />
+                                  <span className={clsx("text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1", roleConfig.color)}>
+                                    <RoleIcon size={11} />
                                     {shift.role}
                                   </span>
                                   <button
                                     onClick={() => setViewingTasksRole(shift.role)}
-                                    className="text-gray-400 hover:text-brand-primary transition-colors"
+                                    className={clsx("transition-colors", roleConfig.color, "opacity-70 hover:opacity-100")}
                                   >
                                     <Info size={12} />
                                   </button>
@@ -804,7 +806,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                   {isAdmin && editingShiftId === shift.id ? (
                                     <select
                                       autoFocus
-                                      className="w-full text-xs font-bold text-brand-primary bg-transparent outline-none"
+                                      className="w-full text-xs font-black text-brand-primary bg-transparent outline-none border-b border-brand-primary/30 pb-0.5"
                                       value={shift.volunteerId || ''}
                                       onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
                                       onBlur={() => setEditingShiftId(null)}
@@ -821,20 +823,20 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     <div 
                                       className={clsx(
                                         "flex items-center gap-1.5",
-                                        isAdmin && "cursor-pointer hover:text-brand-primary transition-colors group"
+                                        isAdmin && "cursor-pointer transition-colors group"
                                       )}
                                       onClick={() => isAdmin && setEditingShiftId(shift.id)}
                                     >
-                                      <span className={clsx("text-xs font-bold truncate capitalize", isUnfilled ? "text-red-500" : "text-gray-700")}>
+                                      <span className={clsx("text-xs font-black truncate capitalize", isUnfilled ? "text-red-600 bg-red-100/60 px-1.5 py-0.5 rounded-md" : "text-gray-900")}>
                                         {isUnfilled ? 'Sin asignar' : volunteerName}
                                       </span>
-                                      {isAdmin && <Settings2 size={10} className="text-gray-300 group-hover:text-brand-primary" />}
+                                      {isAdmin && <Settings2 size={10} className={clsx("opacity-40 group-hover:opacity-100 transition-opacity", roleConfig.color)} />}
                                     </div>
                                   )}
                                 </div>
 
                                 {isAdmin && !isUnfilled && (
-                                  <div className="mt-2 pt-2 border-t border-gray-100 flex justify-center">
+                                  <div className={clsx("mt-2 pt-2 border-t flex justify-center", roleConfig.border)}>
                                     {shift.evaluated ? (
                                       <button
                                         onClick={() => setEvaluatingShift({ 
@@ -843,14 +845,14 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                           volunteerName: volunteerName!,
                                           initialScores: shift.scores
                                         })}
-                                        className="text-[10px] font-bold text-emerald-600 flex items-center gap-1 hover:text-emerald-700 hover:underline"
+                                        className="text-[10px] font-extrabold text-emerald-700 flex items-center gap-1 hover:text-emerald-800 hover:underline"
                                       >
                                         <CheckCircle2 size={10} /> Rectificar
                                       </button>
                                     ) : (
                                       <button
                                         onClick={() => setEvaluatingShift({ shiftId: shift.id, volunteerId: shift.volunteerId!, volunteerName: volunteerName! })}
-                                        className="text-[10px] font-bold text-brand-accent hover:underline flex items-center gap-1"
+                                        className="text-[10px] font-extrabold text-brand-accent hover:underline flex items-center gap-1"
                                       >
                                         <Star size={10} /> Evaluar
                                       </button>
