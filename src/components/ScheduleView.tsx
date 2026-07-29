@@ -587,14 +587,21 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       ) : (
         <div className="space-y-6">
           {isAdmin && conflicts > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-              <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={20} />
-              <div>
-                <h4 className="text-amber-800 font-medium">Atención: Turnos sin cubrir</h4>
-                <p className="text-amber-700 text-sm mt-1">
-                  Hay {conflicts} turnos que no pudieron ser asignados debido a falta de disponibilidad o límites mensuales.
-                </p>
+            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white border-2 border-red-700 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-xs shrink-0">
+                  <AlertCircle className="text-white" size={24} />
+                </div>
+                <div>
+                  <h4 className="font-black text-base uppercase tracking-wide text-white">¡Atención! Turnos sin asignar</h4>
+                  <p className="text-white/90 text-xs sm:text-sm font-medium mt-0.5">
+                    Hay <span className="font-black underline decoration-2">{conflicts} turnos libres</span> que requieren asignación de voluntarios.
+                  </p>
+                </div>
               </div>
+              <span className="bg-white text-red-600 text-xs font-black px-3.5 py-1.5 rounded-xl uppercase tracking-widest shadow-md shrink-0">
+                {conflicts} Pendientes
+              </span>
             </div>
           )}
 
@@ -663,14 +670,17 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                 const shiftTime = shift.day.includes('Mañana') ? 'M' : shift.day.includes('Tarde') ? 'T' : '';
                                 const isHighlighted = selectedVolunteerId && shift.volunteerId === selectedVolunteerId;
                                 const isDimmed = selectedVolunteerId && !isHighlighted;
+                                const isUnfilled = !shift.volunteerId;
 
                                 return (
                                   <div 
                                     key={shift.id} 
                                     className={clsx(
-                                      "text-[10px] font-medium flex items-center gap-1 px-1.5 py-1 rounded-md border bg-white transition-all", 
-                                      roleConfig.color,
-                                      isAdmin && "cursor-pointer hover:shadow-sm group",
+                                      "text-[10px] flex items-center gap-1 px-1.5 py-1 rounded-md border transition-all", 
+                                      isUnfilled 
+                                        ? "bg-red-600 text-white border-red-700 font-black shadow-xs ring-1 ring-red-300" 
+                                        : "bg-white font-medium " + roleConfig.color,
+                                      isAdmin && "cursor-pointer hover:shadow-md hover:scale-[1.02] group",
                                       shift.eventName && "border-brand-accent/30",
                                       isHighlighted && "ring-2 ring-brand-primary border-brand-primary shadow-sm z-10",
                                       isDimmed && "opacity-40 grayscale-[50%]"
@@ -681,7 +691,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     {isAdmin && editingShiftId === shift.id ? (
                                       <select
                                         autoFocus
-                                        className="w-full bg-transparent outline-none text-[10px] font-bold"
+                                        className="w-full bg-white text-gray-900 outline-none text-[10px] font-bold rounded px-1"
                                         value={shift.volunteerId || ''}
                                         onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
                                         onBlur={() => setEditingShiftId(null)}
@@ -697,16 +707,26 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                       </select>
                                     ) : (
                                       <>
-                                        <RoleIcon size={10} className="shrink-0" />
+                                        {isUnfilled ? (
+                                          <AlertCircle size={10} className="shrink-0 text-white animate-pulse" />
+                                        ) : (
+                                          <RoleIcon size={10} className="shrink-0" />
+                                        )}
                                         <span className="truncate">
                                           {shift.role}
-                                          {!selectedVolunteerId && shift.volunteerId && (
-                                            <span className="ml-1 opacity-75">- {getVolunteerName(shift.volunteerId)?.split(' ')[0]}</span>
+                                          {isUnfilled ? (
+                                            <span className="ml-1 uppercase tracking-tight font-black underline">LIBRE</span>
+                                          ) : (
+                                            !selectedVolunteerId && shift.volunteerId && (
+                                              <span className="ml-1 opacity-75">- {getVolunteerName(shift.volunteerId)?.split(' ')[0]}</span>
+                                            )
                                           )}
                                         </span>
-                                        {shiftTime && !shift.eventName && <span className="ml-auto font-bold opacity-50">{shiftTime}</span>}
+                                        {shiftTime && !shift.eventName && (
+                                          <span className={clsx("ml-auto font-bold", isUnfilled ? "text-white/80" : "opacity-50")}>{shiftTime}</span>
+                                        )}
                                         {shift.eventName && <span className="ml-auto font-bold text-brand-accent">!</span>}
-                                        {isAdmin && <Settings2 size={8} className="text-gray-300 group-hover:text-brand-primary ml-0.5 shrink-0" />}
+                                        {isAdmin && <Settings2 size={8} className={clsx("ml-0.5 shrink-0", isUnfilled ? "text-white/80 group-hover:text-white" : "text-gray-300 group-hover:text-brand-primary")} />}
                                       </>
                                     )}
                                   </div>
@@ -783,30 +803,39 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                               <div 
                                 key={shift.id} 
                                 className={clsx(
-                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all hover:scale-[1.01] hover:shadow-sm",
-                                  roleConfig.bg,
-                                  roleConfig.border,
+                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all hover:scale-[1.01] hover:shadow-md relative overflow-hidden",
+                                  isUnfilled 
+                                    ? "bg-gradient-to-br from-red-100/90 via-red-50 to-amber-50/70 border-2 border-red-400 ring-2 ring-red-400/50 shadow-sm" 
+                                    : clsx(roleConfig.bg, roleConfig.border),
                                   isHighlighted ? "ring-2 ring-brand-primary border-brand-primary shadow-md" : ""
                                 )}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={clsx("text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1", roleConfig.color)}>
+                                  <span className={clsx("text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1", isUnfilled ? "text-red-900" : roleConfig.color)}>
                                     <RoleIcon size={11} />
                                     {shift.role}
                                   </span>
-                                  <button
-                                    onClick={() => setViewingTasksRole(shift.role)}
-                                    className={clsx("transition-colors", roleConfig.color, "opacity-70 hover:opacity-100")}
-                                  >
-                                    <Info size={12} />
-                                  </button>
+                                  <div className="flex items-center gap-1">
+                                    {isUnfilled && (
+                                      <span className="p-1 rounded-full bg-red-600 text-white shadow-xs animate-pulse inline-flex items-center justify-center" title="Turno sin asignar">
+                                        <AlertCircle size={11} />
+                                      </span>
+                                    )}
+                                    <button
+                                      onClick={() => setViewingTasksRole(shift.role)}
+                                      className={clsx("transition-colors p-0.5 rounded hover:bg-black/5", isUnfilled ? "text-red-800 opacity-75 hover:opacity-100" : clsx(roleConfig.color, "opacity-70 hover:opacity-100"))}
+                                      title="Ver tareas del rol"
+                                    >
+                                      <Info size={12} />
+                                    </button>
+                                  </div>
                                 </div>
                                 
                                 <div className="mt-1">
                                   {isAdmin && editingShiftId === shift.id ? (
                                     <select
                                       autoFocus
-                                      className="w-full text-xs font-black text-brand-primary bg-transparent outline-none border-b border-brand-primary/30 pb-0.5"
+                                      className="w-full text-xs font-black text-red-900 bg-white border-2 border-red-400 rounded-lg p-1 outline-none shadow-sm"
                                       value={shift.volunteerId || ''}
                                       onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
                                       onBlur={() => setEditingShiftId(null)}
@@ -827,10 +856,26 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                       )}
                                       onClick={() => isAdmin && setEditingShiftId(shift.id)}
                                     >
-                                      <span className={clsx("text-xs font-black truncate capitalize", isUnfilled ? "text-red-600 bg-red-100/60 px-1.5 py-0.5 rounded-md" : "text-gray-900")}>
-                                        {isUnfilled ? 'Sin asignar' : volunteerName}
-                                      </span>
-                                      {isAdmin && <Settings2 size={10} className={clsx("opacity-40 group-hover:opacity-100 transition-opacity", roleConfig.color)} />}
+                                      {isUnfilled ? (
+                                        <span className="text-xs font-black truncate capitalize flex items-center justify-between gap-1 text-red-900 bg-red-100/90 border border-red-300 px-2.5 py-1.5 rounded-lg w-full shadow-2xs group-hover:bg-red-200 transition-colors">
+                                          <span className="flex items-center gap-1.5 font-extrabold">
+                                            <UserCircle2 size={15} className="text-red-600 shrink-0" />
+                                            Sin asignar
+                                          </span>
+                                          {isAdmin && (
+                                            <span className="text-[10px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0 shadow-xs">
+                                              Asignar
+                                            </span>
+                                          )}
+                                        </span>
+                                      ) : (
+                                        <>
+                                          <span className="text-xs font-black truncate capitalize text-gray-900">
+                                            {volunteerName}
+                                          </span>
+                                          {isAdmin && <Settings2 size={10} className={clsx("opacity-40 group-hover:opacity-100 transition-opacity", roleConfig.color)} />}
+                                        </>
+                                      )}
                                     </div>
                                   )}
                                 </div>
