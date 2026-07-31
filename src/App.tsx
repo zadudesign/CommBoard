@@ -191,82 +191,82 @@ export default function App() {
             </div>
             
             {/* Navigation */}
-            <div className="flex flex-wrap items-center gap-4">
-              <nav className="flex gap-1.5 bg-brand-secondary/30 p-1.5 rounded-2xl backdrop-blur-sm">
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <nav className="flex gap-1 bg-brand-secondary/30 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl backdrop-blur-sm">
                 <button
                   onClick={() => setActiveTab('schedule')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     activeTab === 'schedule'
-                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      ? 'bg-white text-brand-primary shadow-md sm:shadow-lg scale-[1.02] sm:scale-105'
                       : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <CalendarDays size={18} />
+                  <CalendarDays size={16} className="sm:w-[18px] sm:h-[18px]" />
                   <span className="hidden sm:inline">Calendario</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('availability')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     activeTab === 'availability'
-                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      ? 'bg-white text-brand-primary shadow-md sm:shadow-lg scale-[1.02] sm:scale-105'
                       : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <CalendarCheck2 size={18} />
+                  <CalendarCheck2 size={16} className="sm:w-[18px] sm:h-[18px]" />
                   <span className="hidden sm:inline">Disponibilidad</span>
                 </button>
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('volunteers')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     activeTab === 'volunteers'
-                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      ? 'bg-white text-brand-primary shadow-md sm:shadow-lg scale-[1.02] sm:scale-105'
                       : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Users size={18} />
+                  <Users size={16} className="sm:w-[18px] sm:h-[18px]" />
                   <span className="hidden sm:inline">Voluntarios</span>
                 </button>
               )}
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('ranking')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     activeTab === 'ranking'
-                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      ? 'bg-white text-brand-primary shadow-md sm:shadow-lg scale-[1.02] sm:scale-105'
                       : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Trophy size={18} />
+                  <Trophy size={16} className="sm:w-[18px] sm:h-[18px]" />
                   <span className="hidden sm:inline">Ranking</span>
                 </button>
               )}
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('settings')}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     activeTab === 'settings'
-                      ? 'bg-white text-brand-primary shadow-lg scale-105'
+                      ? 'bg-white text-brand-primary shadow-md sm:shadow-lg scale-[1.02] sm:scale-105'
                       : 'text-brand-light hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Settings size={18} />
+                  <Settings size={16} className="sm:w-[18px] sm:h-[18px]" />
                   <span className="hidden sm:inline">Ajustes</span>
                 </button>
               )}
               </nav>
 
-              <div className="h-8 w-px bg-white/20 hidden sm:block"></div>
+              <div className="h-6 sm:h-8 w-px bg-white/20 hidden sm:block"></div>
 
               {/* Admin Controls */}
               {isAdmin ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     onClick={() => setShowChangePinModal(true)}
-                    className="p-2.5 text-brand-light hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                    className="p-2 sm:p-2.5 text-brand-light hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all"
                     title="Cambiar PIN"
                   >
-                    <KeyRound size={22} />
+                    <KeyRound size={20} className="sm:w-[22px] sm:h-[22px]" />
                   </button>
                   <button
                     onClick={() => {
@@ -275,18 +275,18 @@ export default function App() {
                         setActiveTab('schedule');
                       }
                     }}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-black text-white bg-brand-accent hover:bg-brand-accent/90 rounded-xl transition-all shadow-lg active:scale-95"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-black text-white bg-brand-accent hover:bg-brand-accent/90 rounded-lg sm:rounded-xl transition-all shadow-md active:scale-95"
                   >
-                    <ShieldCheck size={18} />
+                    <ShieldCheck size={16} />
                     <span className="hidden sm:inline">ADMIN ACTIVO</span>
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowLoginModal(true)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-brand-light hover:text-white hover:bg-white/10 rounded-xl transition-all border border-white/10"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-bold text-brand-light hover:text-white hover:bg-white/10 rounded-lg sm:rounded-xl transition-all border border-white/10"
                 >
-                  <ShieldAlert size={18} />
+                  <ShieldAlert size={16} />
                   <span className="hidden sm:inline">Acceso Admin</span>
                 </button>
               )}
@@ -296,7 +296,7 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {isUsingLocalFallback && !supabaseError && (
           <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
             <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={20} />

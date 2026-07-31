@@ -169,31 +169,31 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
   const AVAILABLE_DAYS: Day[] = ['Miércoles', 'Sábado Mañana', 'Sábado Tarde'];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Admin Control Bar */}
       {isAdmin && (
-        <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-2xl p-6 shadow-sm animate-in fade-in duration-300">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-brand-primary rounded-xl text-white shadow-md">
-                <ShieldCheck size={22} />
+        <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-sm animate-in fade-in duration-300">
+          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="p-2 sm:p-2.5 bg-brand-primary rounded-lg sm:rounded-xl text-white shadow-md shrink-0">
+                <ShieldCheck size={18} className="sm:w-[22px] sm:h-[22px]" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-brand-primary tracking-tight uppercase">Panel de Control Admin</h3>
-                <p className="text-xs text-brand-primary/60 font-bold">Habilita o deshabilita la recepción de disponibilidad por mes</p>
+                <h3 className="text-sm sm:text-lg font-black text-brand-primary tracking-tight uppercase leading-tight">Panel de Control Admin</h3>
+                <p className="text-[10px] sm:text-xs text-brand-primary/60 font-bold leading-normal">Habilita o deshabilita la recepción de disponibilidad por mes</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border border-brand-primary/10">
-              <div className="flex items-center gap-2 px-3">
-                <button onClick={handlePrevMonth} className="p-1.5 hover:bg-gray-50 rounded-lg transition-all text-gray-600">
-                  <ChevronLeft size={18} />
+            <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 bg-white p-1.5 sm:p-2 rounded-xl sm:rounded-2xl shadow-sm border border-brand-primary/10">
+              <div className="flex items-center gap-1 sm:gap-2 px-1 sm:px-3 text-xs sm:text-sm">
+                <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-50 rounded-md transition-all text-gray-600">
+                  <ChevronLeft size={16} />
                 </button>
-                <span className="text-sm font-black text-gray-900 min-w-[120px] text-center">
+                <span className="font-black text-gray-900 min-w-[100px] sm:min-w-[120px] text-center capitalize text-[11px] sm:text-sm">
                   {getMonthName(selectedMonth, selectedYear)}
                 </span>
-                <button onClick={handleNextMonth} className="p-1.5 hover:bg-gray-50 rounded-lg transition-all text-gray-600">
-                  <ChevronRight size={18} />
+                <button onClick={handleNextMonth} className="p-1 hover:bg-gray-50 rounded-md transition-all text-gray-600">
+                  <ChevronRight size={16} />
                 </button>
               </div>
               
@@ -201,7 +201,7 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                 onClick={handleToggleMonth}
                 disabled={isUpdatingSettings}
                 className={clsx(
-                  "flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-black transition-all shadow-md active:scale-95",
+                  "flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-black transition-all shadow-md active:scale-95",
                   isMonthEnabled 
                     ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-emerald-200" 
                     : "bg-red-500 text-white hover:bg-red-600 shadow-red-200",
@@ -209,14 +209,14 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                 )}
               >
                 {isUpdatingSettings ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
                 ) : isMonthEnabled ? (
                   <>
-                    <Unlock size={16} /> ABIERTO
+                    <Unlock size={14} /> ABIERTO
                   </>
                 ) : (
                   <>
-                    <Lock size={16} /> CERRADO
+                    <Lock size={14} /> CERRADO
                   </>
                 )}
               </button>
@@ -226,7 +226,7 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
       )}
 
       {/* Selector de Voluntario */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-brand-primary/10 rounded-xl text-brand-primary">
@@ -273,23 +273,23 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
       </div>
 
       {selectedId ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
           {/* Preferencias de Servicio */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 size={20} className="text-emerald-500" />
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                <CheckCircle2 size={18} className="text-emerald-500 sm:w-5 sm:h-5" />
                 Áreas de Interés
               </h3>
-              <p className="text-sm text-gray-500 mb-4">Selecciona las áreas en las que quieres servir:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">Selecciona las áreas en las que quieres servir:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 {AVAILABLE_ROLES.map(role => (
                   <button
                     key={role}
                     disabled={!isAdmin && !isMonthEnabled}
                     onClick={() => toggleRole(role)}
                     className={clsx(
-                      "flex items-center justify-between p-4 rounded-xl border-2 transition-all font-bold text-sm",
+                      "flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 transition-all font-bold text-xs sm:text-sm",
                       localRoles.includes(role)
                         ? "bg-brand-primary/5 border-brand-primary text-brand-primary"
                         : "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-200",
@@ -297,26 +297,26 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                     )}
                   >
                     {role}
-                    {localRoles.includes(role) && <CheckCircle2 size={18} />}
+                    {localRoles.includes(role) && <CheckCircle2 size={16} className="sm:w-4.5 sm:h-4.5" />}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 size={20} className="text-emerald-500" />
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4 flex items-center gap-2">
+                <CheckCircle2 size={18} className="text-emerald-500 sm:w-5 sm:h-5" />
                 Disponibilidad General
               </h3>
-              <p className="text-sm text-gray-500 mb-4">Días que sueles estar disponible:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">Días que sueles estar disponible:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 {AVAILABLE_DAYS.map(day => (
                   <button
                     key={day}
                     disabled={!isAdmin && !isMonthEnabled}
                     onClick={() => toggleDay(day)}
                     className={clsx(
-                      "flex items-center justify-between p-4 rounded-xl border-2 transition-all font-bold text-sm",
+                      "flex items-center justify-between p-3 sm:p-4 rounded-xl border-2 transition-all font-bold text-xs sm:text-sm",
                       localDays.includes(day)
                         ? "bg-brand-primary/5 border-brand-primary text-brand-primary"
                         : "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-200",
@@ -324,7 +324,7 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                     )}
                   >
                     {day}
-                    {localDays.includes(day) && <CheckCircle2 size={18} />}
+                    {localDays.includes(day) && <CheckCircle2 size={16} className="sm:w-4.5 sm:h-4.5" />}
                   </button>
                 ))}
               </div>
@@ -332,23 +332,23 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
           </div>
 
           {/* Días de Inasistencia Específicos */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-full flex flex-col">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <XCircle size={20} className="text-red-500" />
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 h-full flex flex-col">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <XCircle size={18} className="text-red-500 sm:w-5 sm:h-5" />
                   Días No Disponible
                 </h3>
                 {!isAdmin && (
-                  <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100">
-                    <button onClick={handlePrevMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
-                      <ChevronLeft size={20} />
+                  <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
+                    <button onClick={handlePrevMonth} className="p-1 hover:bg-white hover:shadow-xs rounded-md transition-all text-gray-600">
+                      <ChevronLeft size={16} />
                     </button>
-                    <span className="text-sm font-black text-gray-900 min-w-[140px] text-center px-2">
+                    <span className="text-xs font-black text-gray-900 min-w-[110px] text-center px-1 capitalize">
                       {getMonthName(selectedMonth, selectedYear)}
                     </span>
-                    <button onClick={handleNextMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-gray-600">
-                      <ChevronRight size={20} />
+                    <button onClick={handleNextMonth} className="p-1 hover:bg-white hover:shadow-xs rounded-md transition-all text-gray-600">
+                      <ChevronRight size={16} />
                     </button>
                   </div>
                 )}
@@ -356,17 +356,17 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
 
               <div className="flex-1">
                 {!isAdmin && !isMonthEnabled ? (
-                  <div className="bg-red-50 rounded-2xl p-8 text-center border border-red-100">
-                    <Lock className="text-red-400 mx-auto mb-4" size={48} />
-                    <h4 className="text-lg font-bold text-red-900 mb-2">Recepción Cerrada</h4>
-                    <p className="text-sm text-red-700">
+                  <div className="bg-red-50 rounded-2xl p-6 text-center border border-red-100">
+                    <Lock className="text-red-400 mx-auto mb-3" size={40} />
+                    <h4 className="text-base font-bold text-red-900 mb-1">Recepción Cerrada</h4>
+                    <p className="text-xs text-red-700">
                       Un administrador ha cerrado la recepción de disponibilidad para el mes de {getMonthName(selectedMonth, selectedYear)}.
                     </p>
                   </div>
                 ) : (
                   <>
-                    <div className="bg-blue-50/50 rounded-xl p-4 mb-6 flex items-start gap-3 border border-blue-100">
-                      <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
+                    <div className="bg-blue-50/50 rounded-xl p-3 mb-4 flex items-start gap-2.5 border border-blue-100">
+                      <Info className="text-blue-500 shrink-0 mt-0.5" size={16} />
                       <p className="text-xs text-blue-700 leading-relaxed font-medium">
                         Haz clic en los días específicos de este mes en los que <strong>NO</strong> podrás asistir para que el sistema no te asigne turnos.
                       </p>
@@ -387,16 +387,16 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                             disabled={!isAdmin && !isMonthEnabled}
                             onClick={() => toggleRestrictedDate(dateStr)}
                             className={clsx(
-                              "flex items-center justify-between p-4 rounded-xl border-2 transition-all font-bold text-sm",
+                              "flex items-center justify-between p-2.5 sm:p-4 rounded-xl border-2 transition-all font-bold text-xs sm:text-sm",
                               isRestricted
                                 ? "bg-red-50 border-red-200 text-red-600"
                                 : "bg-gray-50 border-gray-100 text-gray-700 hover:border-gray-200",
                               (!isAdmin && !isMonthEnabled) && "opacity-60 cursor-not-allowed"
                             )}
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
                               <span className={clsx(
-                                "w-10 h-10 flex items-center justify-center rounded-lg text-sm",
+                                "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-xs sm:text-sm shrink-0",
                                 isRestricted ? "bg-red-100" : "bg-white shadow-sm border border-gray-100"
                               )}>
                                 {date.getDate()}
@@ -405,25 +405,25 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
                                 <span className="block text-xs text-gray-400 font-medium uppercase tracking-wider">
                                   {isWednesday ? 'Miércoles' : 'Sábado'}
                                 </span>
-                                <span className="block text-xs text-gray-500 font-medium lowercase">
+                                <span className="block text-[11px] sm:text-xs text-gray-500 font-medium lowercase">
                                   {monthNames[date.getMonth()]} {date.getFullYear()}
                                 </span>
                               </div>
                             </div>
                             {isRestricted ? (
-                              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-tighter bg-red-600 text-white px-2 py-1 rounded-md">
-                                <XCircle size={14} /> NO DISPONIBLE
+                              <div className="flex items-center gap-1 text-[8px] sm:text-[10px] uppercase tracking-tighter bg-red-600 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md shrink-0">
+                                <XCircle size={12} className="sm:w-3.5 sm:h-3.5" /> NO DISPONIBLE
                               </div>
                             ) : (
-                              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-tighter bg-emerald-500 text-white px-2 py-1 rounded-md">
-                                <CheckCircle2 size={14} /> DISPONIBLE
+                              <div className="flex items-center gap-1 text-[8px] sm:text-[10px] uppercase tracking-tighter bg-emerald-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md shrink-0">
+                                <CheckCircle2 size={12} className="sm:w-3.5 sm:h-3.5" /> DISPONIBLE
                               </div>
                             )}
                           </button>
                         );
                       })}
                       {monthDays.length === 0 && (
-                        <div className="text-center py-12 text-gray-400">
+                        <div className="text-center py-8 text-gray-400 text-xs">
                           No se encontraron días válidos para este mes.
                         </div>
                       )}
@@ -433,23 +433,23 @@ export function AvailabilityView({ volunteers, isAdmin, onUpdateVolunteers }: Av
               </div>
 
               {(isAdmin || isMonthEnabled) && (
-                <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="mt-6 pt-4 border-t border-gray-100">
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
                     className={clsx(
-                      "w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black shadow-lg transition-all active:scale-95 uppercase tracking-widest text-sm",
+                      "w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-black shadow-md transition-all active:scale-95 uppercase tracking-wider text-xs sm:text-sm",
                       isSaving ? "bg-gray-400 cursor-not-allowed" : "bg-brand-primary text-white hover:bg-brand-secondary"
                     )}
                   >
                     {isSaving ? (
                       <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                         Guardando...
                       </>
                     ) : (
                       <>
-                        <Save size={20} />
+                        <Save size={16} />
                         Guardar Disponibilidad
                       </>
                     )}

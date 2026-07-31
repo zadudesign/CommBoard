@@ -433,66 +433,68 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h2 className="text-2xl font-black text-brand-primary tracking-tight">Calendario</h2>
-            <div className="flex items-center gap-1 bg-white rounded-xl p-1 text-sm font-bold border border-brand-light/50 shadow-sm">
-              <button onClick={handlePrevMonth} className="p-1.5 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-lg transition-all"><ChevronLeft size={20}/></button>
-              <span className="w-40 text-center capitalize text-brand-primary font-black tracking-wide">{getMonthName(selectedMonth, selectedYear)}</span>
-              <button onClick={handleNextMonth} className="p-1.5 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-lg transition-all"><ChevronRight size={20}/></button>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center flex-wrap gap-2 mb-0.5">
+              <h2 className="text-xl sm:text-2xl font-black text-brand-primary tracking-tight">Calendario</h2>
+              <div className="flex items-center gap-0.5 sm:gap-1 bg-white rounded-lg sm:rounded-xl p-0.5 sm:p-1 text-xs sm:text-sm font-bold border border-brand-light/50 shadow-sm">
+                <button onClick={handlePrevMonth} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all"><ChevronLeft size={16} className="sm:w-5 sm:h-5"/></button>
+                <span className="w-28 sm:w-40 text-center capitalize text-brand-primary font-black tracking-wide text-[11px] sm:text-sm">{getMonthName(selectedMonth, selectedYear)}</span>
+                <button onClick={handleNextMonth} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all"><ChevronRight size={16} className="sm:w-5 sm:h-5"/></button>
+              </div>
             </div>
+            <p className="text-gray-500 text-xs sm:text-sm">
+              {isAdmin ? 'Generación automática de turnos' : 'Consulta tus turnos asignados'}
+            </p>
           </div>
-          <p className="text-gray-500 text-sm mt-1">
-            {isAdmin ? 'Generación automática de turnos' : 'Consulta tus turnos asignados'}
-          </p>
         </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
             {/* View Mode Toggle */}
-            <div className="flex bg-brand-primary/5 p-1.5 rounded-2xl border border-brand-light/30 shadow-inner">
+            <div className="flex bg-brand-primary/5 p-1 rounded-xl sm:rounded-2xl border border-brand-light/30 shadow-inner w-full sm:w-auto">
               <button
                 onClick={() => setViewMode('weekly')}
                 className={clsx(
-                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
-                  viewMode === 'weekly' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                  "flex-1 sm:flex-none flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg sm:rounded-xl transition-all uppercase tracking-wider sm:tracking-widest",
+                  viewMode === 'weekly' ? "bg-brand-primary text-white shadow-md sm:shadow-lg scale-102 sm:scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
                 )}
               >
-                <CalendarIcon size={14} />
+                <CalendarIcon size={12} className="sm:w-3.5 sm:h-3.5" />
                 Semanal
               </button>
               <button
                 onClick={() => setViewMode('monthly')}
                 className={clsx(
-                  "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
-                  viewMode === 'monthly' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                  "flex-1 sm:flex-none flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg sm:rounded-xl transition-all uppercase tracking-wider sm:tracking-widest",
+                  viewMode === 'monthly' ? "bg-brand-primary text-white shadow-md sm:shadow-lg scale-102 sm:scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
                 )}
               >
-                <CalendarRange size={14} />
+                <CalendarRange size={12} className="sm:w-3.5 sm:h-3.5" />
                 Mensual
               </button>
               {isAdmin && (
                 <button
                   onClick={() => setViewMode('calendar')}
                   className={clsx(
-                    "flex items-center gap-1.5 px-4 py-2 text-xs font-black rounded-xl transition-all uppercase tracking-widest",
-                    viewMode === 'calendar' ? "bg-brand-primary text-white shadow-lg scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
+                    "flex-1 sm:flex-none flex items-center justify-center gap-1 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-black rounded-lg sm:rounded-xl transition-all uppercase tracking-wider sm:tracking-widest",
+                    viewMode === 'calendar' ? "bg-brand-primary text-white shadow-md sm:shadow-lg scale-102 sm:scale-105" : "text-brand-secondary hover:text-brand-primary hover:bg-white/50"
                   )}
                 >
-                  <Grid size={14} />
+                  <Grid size={12} className="sm:w-3.5 sm:h-3.5" />
                   Calendario
                 </button>
               )}
             </div>
 
             {/* Volunteer Selector */}
-            <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-2xl border border-brand-light/50 shadow-sm hover:border-brand-primary/50 transition-all">
-              <UserCircle2 size={20} className="text-brand-accent" />
+            <div className="flex items-center gap-2 bg-white px-2.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl border border-brand-light/50 shadow-sm hover:border-brand-primary/50 transition-all w-full sm:w-auto">
+              <UserCircle2 size={16} className="text-brand-accent sm:w-5 sm:h-5" />
               <select
                 value={selectedVolunteerId || ''}
                 onChange={(e) => onSelectVolunteer(e.target.value || null)}
-                className="text-xs font-black text-brand-primary bg-transparent outline-none cursor-pointer capitalize tracking-wider"
+                className="text-[11px] sm:text-xs font-black text-brand-primary bg-transparent outline-none cursor-pointer capitalize tracking-wide w-full sm:w-auto"
               >
                 <option value="">Ver todos los turnos</option>
                 {volunteers.map(v => (
@@ -503,14 +505,14 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
 
             {/* Admin Controls */}
             {isAdmin && (
-              <div className="flex items-center gap-3 bg-white p-2.5 rounded-2xl border border-brand-light/50 shadow-sm">
-                <div className="flex items-center gap-2 px-3 border-r border-brand-light/30">
-                  <Settings2 size={18} className="text-brand-secondary" />
-                  <span className="text-xs font-black text-brand-secondary uppercase tracking-widest">Max/Mes:</span>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 bg-white p-1 sm:p-2 rounded-xl sm:rounded-2xl border border-brand-light/50 shadow-sm w-full sm:w-auto">
+                <div className="flex items-center gap-1 px-2 border-r border-brand-light/30 text-[10px] sm:text-xs">
+                  <Settings2 size={14} className="text-brand-secondary" />
+                  <span className="font-black text-brand-secondary uppercase tracking-wider hidden sm:inline">Max/Mes:</span>
                   <select
                     value={config.maxPerMonth}
                     onChange={(e) => setConfig({ ...config, maxPerMonth: Number(e.target.value) })}
-                    className="text-xs font-black text-brand-accent bg-transparent outline-none cursor-pointer"
+                    className="font-black text-brand-accent bg-transparent outline-none cursor-pointer ml-1"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
@@ -518,44 +520,44 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                 <button
                   onClick={handleGenerate}
                   disabled={isGenerating || volunteers.length === 0}
-                  className="flex items-center gap-2 bg-brand-primary text-white px-5 py-2.5 rounded-xl hover:bg-brand-secondary transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 bg-brand-primary text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl hover:bg-brand-secondary transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-[10px] sm:text-xs shadow-sm active:scale-95 uppercase tracking-wider"
                 >
-                  <RefreshCw size={18} className={isGenerating ? 'animate-spin' : ''} />
-                  <span className="hidden sm:inline">Generar</span>
+                  <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+                  <span>Generar</span>
                 </button>
                 <button
                   onClick={handleDeleteMonthSchedule}
                   disabled={currentMonthSchedule.length === 0 || isGenerating}
-                  className="flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 bg-red-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-[10px] sm:text-xs shadow-sm active:scale-95 uppercase tracking-wider"
                   title="Borrar turnos del mes"
                 >
-                  <Trash2 size={18} />
-                  <span className="hidden sm:inline">Borrar</span>
+                  <Trash2 size={14} />
+                  <span>Borrar</span>
                 </button>
                 <button
                   onClick={handleDownloadCSV}
                   disabled={filteredSchedule.length === 0}
-                  className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 bg-emerald-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-black text-[10px] sm:text-xs shadow-sm active:scale-95 uppercase tracking-wider"
                   title="Descargar CSV"
                 >
-                  <Download size={18} />
-                  <span className="hidden sm:inline">CSV</span>
+                  <Download size={14} />
+                  <span>CSV</span>
                 </button>
                 <button
                   onClick={() => setIsEventFormOpen(true)}
-                  className="flex items-center gap-2 bg-brand-accent text-white px-5 py-2.5 rounded-xl hover:bg-brand-accent/90 transition-all font-black text-xs shadow-md active:scale-95 uppercase tracking-widest"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-1 bg-brand-accent text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl hover:bg-brand-accent/90 transition-all font-black text-[10px] sm:text-xs shadow-sm active:scale-95 uppercase tracking-wider"
                 >
-                  <PlusCircle size={18} />
-                  <span className="hidden sm:inline">Evento</span>
+                  <PlusCircle size={14} />
+                  <span>Evento</span>
                 </button>
                 {specialEvents.length > 0 && (
                   <button
                     onClick={() => setIsManageEventsOpen(true)}
-                    className="flex items-center gap-2 bg-brand-light/10 text-brand-secondary border border-brand-light/50 px-4 py-2.5 rounded-xl hover:bg-brand-light/20 transition-all font-black text-xs shadow-sm uppercase tracking-widest"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1 bg-brand-light/10 text-brand-secondary border border-brand-light/50 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg sm:rounded-xl hover:bg-brand-light/20 transition-all font-black text-[10px] sm:text-xs shadow-xs uppercase tracking-wider"
                     title="Gestionar Eventos"
                   >
-                    <CalendarRange size={18} />
-                    <span className="hidden sm:inline">Gestionar</span>
+                    <CalendarRange size={14} />
+                    <span className="hidden xs:inline">Gestionar</span>
                   </button>
                 )}
               </div>
@@ -627,17 +629,18 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
             </div>
           )}
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-6">
             {viewMode === 'calendar' ? (
-              <div className="col-span-1 xl:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6">
-                <div className="grid grid-cols-7 gap-2 mb-2">
+              <div className="col-span-1 xl:col-span-2 bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-1.5 sm:p-6">
+                <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1 sm:mb-2">
                   {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(day => (
-                    <div key={day} className="text-center text-[10px] sm:text-sm font-bold text-gray-400 uppercase tracking-wider py-2">
-                      {day}
+                    <div key={day} className="text-center text-[9px] sm:text-sm font-bold text-gray-400 uppercase tracking-wider py-1 sm:py-2">
+                      <span className="hidden sm:inline">{day}</span>
+                      <span className="sm:hidden">{day.charAt(0)}</span>
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
                   {calendarDays.map((day, index) => {
                     const hasShifts = day !== null && volunteerShiftsByDay[day]?.length > 0;
                     const isTodayDate = day !== null && isToday(new Date(selectedYear, selectedMonth, day));
@@ -646,7 +649,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       <div 
                         key={index} 
                         className={clsx(
-                          "min-h-[100px] p-2 rounded-xl border transition-all flex flex-col",
+                          "min-h-[65px] sm:min-h-[100px] p-1 sm:p-2 rounded-lg sm:rounded-xl border transition-all flex flex-col justify-between",
                           day === null ? "bg-transparent border-transparent" : 
                           hasShifts ? "bg-brand-primary/5 border-brand-primary/30 shadow-sm ring-1 ring-brand-primary/20" : 
                           isTodayDate ? "bg-gray-50 border-gray-300" : "bg-white border-gray-100"
@@ -654,16 +657,16 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       >
                         {day !== null && (
                           <>
-                            <div className="flex justify-between items-start mb-2">
+                            <div className="flex justify-between items-start mb-1">
                               <span className={clsx(
-                                "text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full",
+                                "text-[10px] sm:text-sm font-bold w-4 h-4 sm:w-7 sm:h-7 flex items-center justify-center rounded-full shrink-0",
                                 isTodayDate ? "bg-brand-primary text-white" : 
                                 hasShifts ? "text-brand-primary" : "text-gray-500"
                               )}>
                                 {day}
                               </span>
                             </div>
-                            <div className="flex flex-col gap-1 mt-auto">
+                            <div className="flex flex-col gap-0.5 sm:gap-1 mt-auto w-full">
                               {hasShifts && volunteerShiftsByDay[day].map(shift => {
                                 const roleConfig = ROLE_CONFIG[shift.role];
                                 const RoleIcon = roleConfig.icon;
@@ -676,7 +679,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                   <div 
                                     key={shift.id} 
                                     className={clsx(
-                                      "text-[10px] flex items-center gap-1 px-1.5 py-1 rounded-md border transition-all", 
+                                      "text-[8px] sm:text-[10px] flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 sm:py-1 rounded-md border transition-all", 
                                       isUnfilled 
                                         ? "bg-red-600 text-white border-red-700 font-black shadow-xs ring-1 ring-red-300" 
                                         : "bg-white font-medium " + roleConfig.color,
@@ -691,7 +694,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     {isAdmin && editingShiftId === shift.id ? (
                                       <select
                                         autoFocus
-                                        className="w-full bg-white text-gray-900 outline-none text-[10px] font-bold rounded px-1"
+                                        className="w-full bg-white text-gray-900 outline-none text-[8px] sm:text-[10px] font-bold rounded px-0.5"
                                         value={shift.volunteerId || ''}
                                         onChange={(e) => handleReassignVolunteer(shift.id, e.target.value || null)}
                                         onBlur={() => setEditingShiftId(null)}
@@ -708,25 +711,25 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                                     ) : (
                                       <>
                                         {isUnfilled ? (
-                                          <AlertCircle size={10} className="shrink-0 text-white animate-pulse" />
+                                          <AlertCircle size={8} className="shrink-0 text-white animate-pulse sm:w-2.5 sm:h-2.5" />
                                         ) : (
-                                          <RoleIcon size={10} className="shrink-0" />
+                                          <RoleIcon size={8} className="shrink-0 sm:w-2.5 sm:h-2.5" />
                                         )}
-                                        <span className="truncate">
+                                        <span className="truncate flex-1 max-w-[24px] xs:max-w-[40px] sm:max-w-none">
                                           {shift.role}
                                           {isUnfilled ? (
-                                            <span className="ml-1 uppercase tracking-tight font-black underline">LIBRE</span>
+                                            <span className="ml-0.5 uppercase tracking-tight font-black underline text-[6px] sm:text-[8px] hidden xs:inline">LIBRE</span>
                                           ) : (
                                             !selectedVolunteerId && shift.volunteerId && (
-                                              <span className="ml-1 opacity-75">- {getVolunteerName(shift.volunteerId)?.split(' ')[0]}</span>
+                                              <span className="ml-0.5 opacity-75 hidden sm:inline">- {getVolunteerName(shift.volunteerId)?.split(' ')[0]}</span>
                                             )
                                           )}
                                         </span>
                                         {shiftTime && !shift.eventName && (
-                                          <span className={clsx("ml-auto font-bold", isUnfilled ? "text-white/80" : "opacity-50")}>{shiftTime}</span>
+                                          <span className={clsx("ml-auto font-bold text-[7px] sm:text-[9px]", isUnfilled ? "text-white/80" : "opacity-50")}>{shiftTime}</span>
                                         )}
                                         {shift.eventName && <span className="ml-auto font-bold text-brand-accent">!</span>}
-                                        {isAdmin && <Settings2 size={8} className={clsx("ml-0.5 shrink-0", isUnfilled ? "text-white/80 group-hover:text-white" : "text-gray-300 group-hover:text-brand-primary")} />}
+                                        {isAdmin && <Settings2 size={8} className={clsx("ml-0.5 shrink-0 hidden xs:inline", isUnfilled ? "text-white/80 group-hover:text-white" : "text-gray-300 group-hover:text-brand-primary")} />}
                                       </>
                                     )}
                                   </div>
@@ -757,41 +760,41 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                       )}
                     >
                       <div className={clsx(
-                        "px-5 py-3.5 border-b flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap",
+                        "px-3 py-2 sm:px-5 sm:py-3.5 border-b flex items-center justify-between gap-2 w-full",
                         isToday(service.date) ? "bg-brand-primary/5 border-brand-primary/10" : "bg-gray-50/70 border-gray-100"
                       )}>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
                           <div className={clsx(
-                            "p-2 rounded-xl border shadow-xs",
+                            "p-1.5 sm:p-2 rounded-lg sm:rounded-xl border shadow-xs shrink-0",
                             isToday(service.date) ? "bg-brand-primary text-white border-brand-primary/10" : "bg-white text-gray-400 border-gray-150"
                           )}>
-                            <CalendarIcon size={18} />
+                            <CalendarIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h4 className={clsx("font-extrabold text-base capitalize", isToday(service.date) ? "text-brand-primary" : "text-gray-900")}>
+                          <div className="overflow-hidden">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h4 className={clsx("font-extrabold text-sm sm:text-base capitalize truncate", isToday(service.date) ? "text-brand-primary" : "text-gray-900")}>
                                 {formatDate(service.date)}
                               </h4>
                               {isToday(service.date) && (
-                                <span className="bg-brand-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="bg-brand-primary text-white text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                                   Hoy
                                 </span>
                               )}
                               {service.isEvent && (
-                                <span className="bg-brand-accent text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="bg-brand-accent text-white text-[8px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                                   Evento
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
-                        <span className="text-xs font-black text-brand-primary bg-brand-primary/5 px-3 py-1.5 rounded-xl border border-brand-primary/10 uppercase tracking-widest">
+                        <span className="text-[10px] sm:text-xs font-black text-brand-primary bg-brand-primary/5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl border border-brand-primary/10 uppercase tracking-wider sm:tracking-widest shrink-0">
                           {service.day}
                         </span>
                       </div>
 
-                      <div className="p-4 sm:p-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                      <div className="p-2 sm:p-5">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-4">
                           {service.shifts.map(shift => {
                             const roleConfig = ROLE_CONFIG[shift.role];
                             const RoleIcon = roleConfig.icon;
@@ -803,7 +806,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
                               <div 
                                 key={shift.id} 
                                 className={clsx(
-                                  "flex flex-col gap-1.5 p-3.5 rounded-xl border transition-all hover:scale-[1.01] hover:shadow-md relative overflow-hidden",
+                                  "flex flex-col gap-1 sm:gap-1.5 p-2 sm:p-3.5 rounded-xl border transition-all hover:scale-[1.01] hover:shadow-md relative overflow-hidden",
                                   isUnfilled 
                                     ? "bg-gradient-to-br from-red-100/90 via-red-50 to-amber-50/70 border-2 border-red-400 ring-2 ring-red-400/50 shadow-sm" 
                                     : clsx(roleConfig.bg, roleConfig.border),
