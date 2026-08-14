@@ -7,7 +7,7 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { v4 as uuidv4 } from 'uuid';
 import { ROLE_CONFIG } from '../utils/roleConfig';
-import { getServiceDate, isToday, formatDate, getCurrentWeekNumber, getMonthName } from '../utils/dates';
+import { getServiceDate, isToday, formatDate, getMonthName, getStartOfWeek, getEndOfWeek, parseShiftDate, formatWeekRange } from '../utils/dates';
 import { EvaluationModal } from './EvaluationModal';
 import { SpecialEventForm } from './SpecialEventForm';
 import { SpecialEvent, RoleTasks } from '../types';
@@ -94,6 +94,33 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const handleNextMonth = () => {
     setCurrentDate(new Date(selectedYear, selectedMonth + 1, 1));
   };
+
+  const handlePrevPeriod = () => {
+    if (viewMode === 'weekly') {
+      setCurrentDate(prev => {
+        const d = new Date(prev);
+        d.setDate(d.getDate() - 7);
+        return d;
+      });
+    } else {
+      handlePrevMonth();
+    }
+  };
+
+  const handleNextPeriod = () => {
+    if (viewMode === 'weekly') {
+      setCurrentDate(prev => {
+        const d = new Date(prev);
+        d.setDate(d.getDate() + 7);
+        return d;
+      });
+    } else {
+      handleNextMonth();
+    }
+  };
+
+  const startOfWeek = useMemo(() => getStartOfWeek(currentDate), [currentDate]);
+  const endOfWeek = useMemo(() => getEndOfWeek(currentDate), [currentDate]);
 
   const currentMonthSchedule = useMemo(() => {
     return schedule.filter(s => {
@@ -321,26 +348,21 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const selectedVolunteer = useMemo(() => volunteers.find(v => v.id === selectedVolunteerId), [volunteers, selectedVolunteerId]);
 
   const filteredSchedule = useMemo(() => {
-    if (isAdmin) return currentMonthSchedule;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    return currentMonthSchedule.filter(s => {
-      const date = s.date ? new Date(s.date) : getServiceDate(s.week, s.day as any, selectedMonth, selectedYear);
-      const shiftDate = new Date(date);
-      shiftDate.setHours(0, 0, 0, 0);
-      return shiftDate >= today;
-    });
-  }, [currentMonthSchedule, isAdmin, selectedMonth, selectedYear]);
+    if (viewMode === 'weekly') {
+      return schedule.filter(s => {
+        const shiftDate = parseShiftDate(s, selectedMonth, selectedYear);
+        return shiftDate >= startOfWeek && shiftDate <= endOfWeek;
+      });
+    }
+
+    return currentMonthSchedule;
+  }, [schedule, currentMonthSchedule, viewMode, startOfWeek, endOfWeek, selectedMonth, selectedYear]);
 
   const selectedVolunteerShiftCount = useMemo(() => {
     if (!selectedVolunteerId) return 0;
     return filteredSchedule.filter(s => s.volunteerId === selectedVolunteerId).length;
   }, [filteredSchedule, selectedVolunteerId]);
 
-  const currentWeek = getCurrentWeekNumber(selectedMonth, selectedYear);
-  
   const allFilteredServices = useMemo(() => {
     if (viewMode !== 'monthly' && viewMode !== 'weekly') return [];
     
@@ -348,13 +370,8 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     
     filteredSchedule.forEach(shift => {
       if (selectedVolunteerId && shift.volunteerId !== selectedVolunteerId) return;
-      
-      // Filter by week if in weekly mode
-      if (viewMode === 'weekly' && shift.week !== currentWeek) return;
 
-      const date = shift.date 
-        ? new Date(shift.date) 
-        : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
+      const date = parseShiftDate(shift, selectedMonth, selectedYear);
       
       const existingService = services.find(s => s.date.getTime() === date.getTime() && s.day === shift.day);
       if (existingService) {
@@ -385,7 +402,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
       if ((a.day as string).includes('Tarde') && (b.day as string).includes('Mañana')) return 1;
       return 0;
     });
-  }, [filteredSchedule, viewMode, selectedVolunteerId, selectedMonth, selectedYear, currentWeek]);
+  }, [filteredSchedule, viewMode, selectedVolunteerId, selectedMonth, selectedYear]);
 
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(selectedYear, selectedMonth, 1).getDay(); // 0 = Sunday
@@ -401,9 +418,9 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
   const volunteerShiftsByDay = useMemo(() => {
     const shiftsMap: Record<number, Shift[]> = {};
     
-    filteredSchedule.forEach(shift => {
+    currentMonthSchedule.forEach(shift => {
       if (!selectedVolunteerId || shift.volunteerId === selectedVolunteerId) {
-        const date = shift.date ? new Date(shift.date) : getServiceDate(shift.week, shift.day as any, selectedMonth, selectedYear);
+        const date = parseShiftDate(shift, selectedMonth, selectedYear);
         if (date.getMonth() === selectedMonth) {
           const day = date.getDate();
           if (!shiftsMap[day]) shiftsMap[day] = [];
@@ -422,7 +439,7 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
     });
     
     return shiftsMap;
-  }, [filteredSchedule, selectedVolunteerId, selectedMonth, selectedYear]);
+  }, [currentMonthSchedule, selectedVolunteerId, selectedMonth, selectedYear]);
 
   if (isLoading) {
     return (
@@ -440,9 +457,11 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
             <div className="flex items-center flex-wrap gap-2 mb-0.5">
               <h2 className="text-xl sm:text-2xl font-black text-brand-primary tracking-tight">Calendario</h2>
               <div className="flex items-center gap-0.5 sm:gap-1 bg-white rounded-lg sm:rounded-xl p-0.5 sm:p-1 text-xs sm:text-sm font-bold border border-brand-light/50 shadow-sm">
-                <button onClick={handlePrevMonth} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all"><ChevronLeft size={16} className="sm:w-5 sm:h-5"/></button>
-                <span className="w-28 sm:w-40 text-center capitalize text-brand-primary font-black tracking-wide text-[11px] sm:text-sm">{getMonthName(selectedMonth, selectedYear)}</span>
-                <button onClick={handleNextMonth} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all"><ChevronRight size={16} className="sm:w-5 sm:h-5"/></button>
+                <button onClick={handlePrevPeriod} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all" title={viewMode === 'weekly' ? 'Semana anterior' : 'Mes anterior'}><ChevronLeft size={16} className="sm:w-5 sm:h-5"/></button>
+                <span className="w-36 sm:w-56 text-center capitalize text-brand-primary font-black tracking-wide text-[11px] sm:text-sm truncate">
+                  {viewMode === 'weekly' ? formatWeekRange(startOfWeek, endOfWeek) : getMonthName(selectedMonth, selectedYear)}
+                </span>
+                <button onClick={handleNextPeriod} className="p-1 text-brand-secondary hover:text-brand-accent hover:bg-brand-light/20 rounded-md transition-all" title={viewMode === 'weekly' ? 'Siguiente semana' : 'Siguiente mes'}><ChevronRight size={16} className="sm:w-5 sm:h-5"/></button>
               </div>
             </div>
             <p className="text-gray-500 text-xs sm:text-sm">
@@ -746,8 +765,19 @@ export function ScheduleView({ volunteers, isAdmin, selectedVolunteerId, onSelec
             ) : (
               <div className="col-span-1 xl:col-span-2 space-y-4">
                 {viewMode === 'weekly' && (
-                  <div className="mb-2 flex justify-between items-center">
-                    <h3 className="text-xl font-black text-brand-primary uppercase tracking-tight">Esta Semana</h3>
+                  <div className="mb-2 flex flex-col xs:flex-row justify-between items-start xs:items-center gap-2">
+                    <div>
+                      <h3 className="text-xl font-black text-brand-primary uppercase tracking-tight">Semana Actual</h3>
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-0.5">
+                        {formatWeekRange(startOfWeek, endOfWeek)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setCurrentDate(new Date())}
+                      className="text-[10px] sm:text-xs font-bold text-brand-primary bg-brand-primary/5 hover:bg-brand-primary/10 border border-brand-primary/20 px-2.5 py-1 rounded-lg transition-all uppercase tracking-wider"
+                    >
+                      Ir a Hoy
+                    </button>
                   </div>
                 )}
                 {allFilteredServices.length > 0 ? (

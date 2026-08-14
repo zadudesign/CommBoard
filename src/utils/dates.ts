@@ -47,6 +47,54 @@ export function getMonthName(month: number, year: number): string {
   return `${name} ${year}`;
 }
 
+export function getStartOfWeek(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = d.getDay(); // 0 = Sunday
+  d.setDate(d.getDate() - day);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+export function getEndOfWeek(date: Date): Date {
+  const start = getStartOfWeek(date);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+  return end;
+}
+
+export function parseShiftDate(
+  shift: { date?: string; week: number; day: any; month?: number; year?: number },
+  fallbackMonth?: number,
+  fallbackYear?: number
+): Date {
+  if (shift.date) {
+    const parts = shift.date.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+        return new Date(year, month, day);
+      }
+    }
+  }
+  return getServiceDate(shift.week, shift.day, shift.month ?? fallbackMonth, shift.year ?? fallbackYear);
+}
+
+export function formatWeekRange(start: Date, end: Date): string {
+  const startDay = start.getDate();
+  const startMonth = monthNames[start.getMonth()];
+  const endDay = end.getDate();
+  const endMonth = monthNames[end.getMonth()];
+
+  if (start.getMonth() === end.getMonth()) {
+    return `Del Domingo ${startDay} al Sábado ${endDay} de ${startMonth}`;
+  } else {
+    return `Del Domingo ${startDay} de ${startMonth} al Sábado ${endDay} de ${endMonth}`;
+  }
+}
+
 export function getCurrentWeekNumber(month?: number, year?: number): number {
   const now = new Date();
   const targetMonth = month ?? now.getMonth();
